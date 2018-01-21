@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GameEngineStage7.Core;
+using System;
 using System.Windows.Forms;
 
 namespace GameEngineStage7
@@ -15,6 +9,18 @@ namespace GameEngineStage7
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            // Размер окна программы
+            this.Width = CONFIG.WIND_WIDTH;
+            this.Height = CONFIG.WIND_HEIGHT;
+
+            // Настройки окна программы
+            KeyPreview = true;
+            DoubleBuffered = true;
+
         }
     }
 }
