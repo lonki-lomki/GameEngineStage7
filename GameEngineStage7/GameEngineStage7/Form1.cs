@@ -1,4 +1,5 @@
 ﻿using GameEngineStage7.Core;
+using GameEngineStage7.Utils;
 using System;
 using System.Windows.Forms;
 
@@ -6,6 +7,20 @@ namespace GameEngineStage7
 {
     public partial class Form1 : Form
     {
+        private string old_title;	// Оригинальный текст в заголовке окна
+
+        private Timer timer = new Timer();
+
+        // Счётчик количества тиков
+        private long tickCount = 0;
+        // Для определения длины интервала времени в тиках
+        private long saveTickCount = 0;
+
+        /// <summary>
+        /// Игровые данные
+        /// </summary>
+        private GameData gd;
+
         public Form1()
         {
             InitializeComponent();
@@ -21,6 +36,97 @@ namespace GameEngineStage7
             KeyPreview = true;
             DoubleBuffered = true;
 
+            Logger log = new Logger("Log.txt");
+
+            gd = GameData.Instance;
+            gd.log = log;
+
+            // Получить доступ к ресурсам, встроенным в проект
+            //gd.myAssembly = Assembly.GetExecutingAssembly();
+
+            // Начальные параметры для обработки интервалов по таймеру
+            tickCount = Environment.TickCount; //GetTickCount();
+            saveTickCount = tickCount;
+
+            // Настройки таймера
+            timer.Enabled = true;
+            timer.Tick += new EventHandler(OnTimer);
+            timer.Interval = 20;
+            timer.Start();
+
+            old_title = this.Text;
+
         }
+
+        ///////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Обработка событий таймера
+        /// </summary>
+        /// <param name="obj">Object.</param>
+        /// <param name="ea">Ea.</param>
+        ///////////////////////////////////////////////////////////////////////
+        private void OnTimer(object obj, EventArgs ea)
+        {
+            int delta;
+
+            // Новое значение времени
+            tickCount = Environment.TickCount;
+
+            delta = (int)(tickCount - saveTickCount);
+
+            if (delta == 0)
+            {
+                // А вдруг!
+                return;
+            }
+
+            // Вычислить FPS
+            float fps = 1000 / delta;
+
+            // Вывести сообщение в заголовке окна
+            this.Text = old_title + " : " + fps + " FPS --- "; // + (string)luaVersion;
+
+            // Проверить флаг смены сцены
+            if (gd.sceneChange == true)
+            {
+                // Удалить все объекты из физ. мира
+                gd.world.objects.Clear();
+
+                // Перенести "живые" объекты из текущей сцены в физический мир
+                foreach (Entity ent in gd.curScene.objects)
+                {
+                    if (ent.IsDestroyed() == false)
+                    {
+                        gd.world.Add(ent);
+                    }
+                }
+                // Сбросить флаг
+                gd.sceneChange = false;
+            }
+
+            // Обновить мир
+            gd.world.Update(delta);
+
+            // Обновить игровую сцену
+            gd.curScene.Update(delta);
+
+            // TODO: тестирование анимации
+            //////anim.update(delta);
+
+            // Проверить актуальность объектов (убрать со сцены уничтоженные объекты)
+            for (int i = gd.world.objects.Count - 1; i >= 0; i--)
+            {
+                if (gd.world.objects[i].IsDestroyed())
+                {
+                    // Удалить из "мира"
+                    gd.world.objects.RemoveAt(i);
+                }
+            }
+
+            saveTickCount = tickCount;
+
+            Invalidate(false);
+        }
+
     }
 }

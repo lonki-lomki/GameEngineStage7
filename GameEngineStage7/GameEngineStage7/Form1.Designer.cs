@@ -36,7 +36,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(292, 270);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Scorched Earth Remake 2018";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 
