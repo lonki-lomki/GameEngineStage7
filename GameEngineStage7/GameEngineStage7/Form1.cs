@@ -1,6 +1,8 @@
 ﻿using GameEngineStage7.Core;
+using GameEngineStage7.Scenes;
 using GameEngineStage7.Utils;
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace GameEngineStage7
@@ -54,7 +56,28 @@ namespace GameEngineStage7
             timer.Interval = 20;
             timer.Start();
 
+            // Создать физический мир
+            gd.world = new PhysWorld(log);
+
             old_title = this.Text;
+
+            // Инициализация менеджера ресурсов
+            gd.rm = ResourceManager.Instance;
+
+            gd.rm.AddElementAsImage("background", Gradient.getImage(Color.Blue, Color.Green, CONFIG.WIND_WIDTH, CONFIG.WIND_HEIGHT, 0));
+            gd.backgroundImage = gd.rm.GetImage("background");
+
+            // Создание и настройка камеры
+            gd.camera = new Camera(new Rectangle(CONFIG.START_X, CONFIG.START_Y, CONFIG.VIEWPORT_WIDTH, CONFIG.VIEWPORT_HEIGHT));
+
+            // Создать стартовую сцену игры
+            GameScene gs = new GameScene(GameData.GameState.Level, gd);
+            //MainMenuScene scene = new MainMenuScene(GameData.GameState.MainMenu, gd);
+            gd.curScene = gs;
+
+            gd.curScene.Init();
+
+            gd.sceneChange = true;
 
         }
 
@@ -84,7 +107,7 @@ namespace GameEngineStage7
             float fps = 1000 / delta;
 
             // Вывести сообщение в заголовке окна
-            this.Text = old_title + " : " + fps + " FPS --- "; // + (string)luaVersion;
+            this.Text = old_title + " : " + fps + " FPS"; // + (string)luaVersion;
 
             // Проверить флаг смены сцены
             if (gd.sceneChange == true)
@@ -126,6 +149,83 @@ namespace GameEngineStage7
             saveTickCount = tickCount;
 
             Invalidate(false);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Обработка событий перерисовки содержимого окна
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
+        ///////////////////////////////////////////////////////////////////////
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+
+
+            // Вывести фоновое изображение, если оно есть
+            if (gd.backgroundImage != null)
+            {
+                g.DrawImage(gd.backgroundImage, 0.0f, 0.0f);
+            }
+
+            // Вызвать метод отображения текущей сцены
+            gd.curScene.Render(g);
+
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Обработка нажатых клавиш
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
+        ///////////////////////////////////////////////////////////////////////
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Вызвать обработчик нажатий клавиш текущей сцены
+            gd.curScene.KeyDown(sender, e);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Обработка отпущенных клавиш
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
+        ///////////////////////////////////////////////////////////////////////
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            // Вызвать обработчик отпусканий клавиш текущей сцены
+            gd.curScene.KeyUp(sender, e);
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// Обработка событий нажатия клавиши мыши
+        /// </summary>
+        /// <param name="sender">Источник события</param>
+        /// <param name="e">Параметры события</param>
+        ///////////////////////////////////////////////////////////////////////
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            // Левая кнопка
+            if (e.Button == MouseButtons.Left)
+            {
+                foreach (Entity ent in gd.world.objects)
+                {
+                    ent.OnLeftMouseButtonClick(e);
+                }
+            }
+
+            // Правая кнопка
+            if (e.Button == MouseButtons.Right)
+            {
+                foreach (Entity ent in gd.world.objects)
+                {
+                    ent.OnRightMouseButtonClick(e);
+                }
+            }
         }
 
     }
