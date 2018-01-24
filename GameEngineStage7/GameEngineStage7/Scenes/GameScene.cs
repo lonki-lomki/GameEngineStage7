@@ -1,4 +1,6 @@
 ﻿using GameEngineStage7.Core;
+using GameEngineStage7.Entities;
+using GameEngineStage7.Utils;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
@@ -29,6 +31,23 @@ namespace GameEngineStage7.Scenes
             gd.rm.Clear();
 
             gd.worldImage = new Bitmap(CONFIG.WIND_WIDTH, CONFIG.WIND_HEIGHT, PixelFormat.Format32bppPArgb);
+
+            //gd.rm.AddElementAsImage("box", Box.GetBox(100, 100, true));
+
+            // Создать и загружить фон для раунда
+            gd.rm.AddElementAsImage("backofround", Gradient.GetImage(Color.Blue, Color.Green, gd.clientRectangle.Width, CONFIG.WIND_HEIGHT, 0));
+            gd.backOfRound = new ImageObject("backofround", gd);
+            gd.backOfRound.SetImage(gd.rm.GetImage("backofround"));
+            gd.backOfRound.SetLayer(0);
+            gd.backOfRound.SetPosition(0.0f, 0.0f);
+            // Добавить объект на сцену
+            objects.Add(gd.backOfRound);
+
+            // Создать игровую панель
+            gd.gamePanel = new GamePanel("gamePanel", gd);
+            gd.gamePanel.SetImage(Box.GetBox(gd.clientRectangle.Width-1 , CONFIG.PANEL_HEIGHT, false));
+            gd.gamePanel.SetPosition(0.0f, 0.0f);
+
 
 
             // Создать объект - тайловую карту и загрузить данные из файла
@@ -123,7 +142,10 @@ namespace GameEngineStage7.Scenes
         {
             base.Render(g);
 
-            // TODO: здесь должен быть вывод того, что виидит камера
+            // Вывод игровой панели
+            gd.gamePanel.Render(g);
+
+            // Вывод того, что виидит камера
             gd.camera.Render(g);
 
         }

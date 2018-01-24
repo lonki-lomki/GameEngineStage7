@@ -60,8 +60,11 @@ namespace GameEngineStage7.Core
                 }
             }
 
+            //gg.DrawImage(gd.rm.GetImage("box"), 50, 50);
+
             // Вывести часть слоя с объектами, которая попадает в поле зрения камеры
-            g.DrawImage(gd.worldImage, new Rectangle(geometry.X, geometry.Y, geometry.Width, geometry.Height), new Rectangle(pointOfView, new Size(CONFIG.VIEWPORT_WIDTH, CONFIG.VIEWPORT_HEIGHT)), GraphicsUnit.Pixel);
+            //g.DrawImage(gd.worldImage, new Rectangle(geometry.X, geometry.Y, geometry.Width, geometry.Height), new Rectangle(pointOfView, new Size(CONFIG.VIEWPORT_WIDTH, CONFIG.VIEWPORT_HEIGHT)), GraphicsUnit.Pixel);
+            g.DrawImage(gd.worldImage, new Rectangle(geometry.X, geometry.Y, geometry.Width, geometry.Height), new Rectangle(pointOfView, new Size(geometry.Width, geometry.Height)), GraphicsUnit.Pixel);
 
             // Нарисовать границы области видимости игрового поля
             g.DrawRectangle(Pens.LightGreen, geometry.X, geometry.Y, geometry.Width, geometry.Height);

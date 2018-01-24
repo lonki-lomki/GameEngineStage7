@@ -1,4 +1,5 @@
-﻿using GameEngineStage7.Utils;
+﻿using GameEngineStage7.Entities;
+using GameEngineStage7.Utils;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -31,6 +32,12 @@ namespace GameEngineStage7.Core
         public HashSet<Keys> PressedKeys = new HashSet<Keys>();
 
         public Bitmap worldImage;   // Буфер для отображения мира (общая карта, из которой камера будет отображать некоторую часть)
+
+        public ImageObject backOfRound;
+
+        public GamePanel gamePanel;
+
+        public Rectangle clientRectangle;
 
         /////////////////////////////////////////////////////////
 

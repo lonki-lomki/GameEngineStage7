@@ -632,7 +632,7 @@ namespace GameEngineStage7.Core
         {
 
             // !!! WARNING !!!
-            // Для этой игры отображение объекта выполняется по координатам его центра
+            // Для этой игры отображение объекта выполняется по координатам левого верхнего угла --его центра
             // !!! WARNING !!!
 
             if (img != null)
@@ -649,12 +649,12 @@ namespace GameEngineStage7.Core
                         graphics.TranslateTransform(-(float)img.Width / 2, -(float)img.Height / 2);
                         graphics.DrawImage(img, 0.0f, 0.0f, img.Width, img.Height);
                     }
-                    g.DrawImage(returnBitmap, GetPosition().X - GetSize().Width / 2, GetPosition().Y - GetSize().Height / 2, GetSize().Width, GetSize().Height);
+                    g.DrawImage(returnBitmap, GetPosition().X, GetPosition().Y, GetSize().Width, GetSize().Height);
                 }
                 else
                 {
                     // Вывод изображения на экран без поворота
-                    g.DrawImage(img, GetPosition().X - GetSize().Width / 2, GetPosition().Y - GetSize().Height / 2, GetSize().Width, GetSize().Height);
+                    g.DrawImage(img, GetPosition().X, GetPosition().Y, GetSize().Width, GetSize().Height);
                     // Для корректного отображения этой функцией необходимо, чтобы DPI изображения совпадал с DPI картинки!!!
                     //                    g.DrawImageUnscaled(img, (int)(GetPosition().X - GetSize().Width / 2), (int)(GetPosition().Y - GetSize().Height / 2));
                 }

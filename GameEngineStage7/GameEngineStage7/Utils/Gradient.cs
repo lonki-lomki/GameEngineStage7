@@ -22,7 +22,7 @@ namespace GameEngineStage7.Utils
         /// <param name="w">ширина градиента</param>
         /// <param name="h">высота градиента</param>
         /// <param name="angle">угол поворота градиента (только 2 значения: 0 - горизонтальный градиент, 90 - вертикальный градиент)</param>
-        public static Image getImage(Color c1, Color c2, int w, int h, int angle)
+        public static Image GetImage(Color c1, Color c2, int w, int h, int angle)
         {
             Bitmap bmp = new Bitmap(w, h);
             Graphics gr = Graphics.FromImage(bmp);

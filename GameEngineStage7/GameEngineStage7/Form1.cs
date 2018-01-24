@@ -61,14 +61,17 @@ namespace GameEngineStage7
 
             old_title = this.Text;
 
+            // Получить геометрию области рисования
+            gd.clientRectangle = ClientRectangle;
+
             // Инициализация менеджера ресурсов
             gd.rm = ResourceManager.Instance;
 
-            gd.rm.AddElementAsImage("background", Gradient.getImage(Color.Blue, Color.Green, CONFIG.WIND_WIDTH, CONFIG.WIND_HEIGHT, 0));
+            gd.rm.AddElementAsImage("background", Gradient.GetImage(Color.Black, Color.Black, ClientRectangle.Width, ClientRectangle.Height, 0));
             gd.backgroundImage = gd.rm.GetImage("background");
 
             // Создание и настройка камеры
-            gd.camera = new Camera(new Rectangle(CONFIG.START_X, CONFIG.START_Y, CONFIG.VIEWPORT_WIDTH, CONFIG.VIEWPORT_HEIGHT));
+            gd.camera = new Camera(new Rectangle(CONFIG.START_X, CONFIG.START_Y, ClientRectangle.Width - CONFIG.START_X*2, ClientRectangle.Height - CONFIG.PANEL_HEIGHT - CONFIG.START_X*2));
 
             // Создать стартовую сцену игры
             GameScene gs = new GameScene(GameData.GameState.Level, gd);
@@ -78,6 +81,8 @@ namespace GameEngineStage7
             gd.curScene.Init();
 
             gd.sceneChange = true;
+
+            
 
         }
 
