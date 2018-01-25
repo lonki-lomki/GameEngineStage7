@@ -61,6 +61,8 @@ namespace GameEngineStage7.Core
             }
 
             //gg.DrawImage(gd.rm.GetImage("box"), 50, 50);
+            //gg.FillPath(Brushes.Black, gd.gp);
+            gg.DrawImage(gd.bmp, 10, 10);
 
             // Вывести часть слоя с объектами, которая попадает в поле зрения камеры
             //g.DrawImage(gd.worldImage, new Rectangle(geometry.X, geometry.Y, geometry.Width, geometry.Height), new Rectangle(pointOfView, new Size(CONFIG.VIEWPORT_WIDTH, CONFIG.VIEWPORT_HEIGHT)), GraphicsUnit.Pixel);

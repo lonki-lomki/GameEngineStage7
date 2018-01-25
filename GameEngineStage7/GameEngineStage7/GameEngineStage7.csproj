@@ -69,6 +69,7 @@
     <Compile Include="Utils\Collider.cs" />
     <Compile Include="Utils\Gradient.cs" />
     <Compile Include="Utils\Logger.cs" />
+    <Compile Include="Utils\Perlin.cs" />
     <Compile Include="Utils\Polygon.cs" />
     <Compile Include="Utils\Vector.cs" />
     <EmbeddedResource Include="Form1.resx">

@@ -15,6 +15,10 @@
         public static readonly int START_X = 2;
         public static readonly int START_Y = PANEL_HEIGHT + 2;
 
+        public static readonly int LANDSHAFT_LEN = 16;  // Количество вершин ландшафта
+        public static readonly int PERLIN_MATRIX_SIZE = 128;    // Размер матрицы для генерации шума Перлина
+        public static readonly int PERLIN_OCTAVES = 1;  // Количество октав для генерации шума Перлина
+
         //public static readonly int VIEWPORT_WIDTH = 1010;
         //public static readonly int VIEWPORT_HEIGHT = 534;
 

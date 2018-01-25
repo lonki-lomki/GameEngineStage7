@@ -2,6 +2,7 @@
 using GameEngineStage7.Utils;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace GameEngineStage7.Core
@@ -46,6 +47,11 @@ namespace GameEngineStage7.Core
         public bool sceneChange = false;
 
         public Camera camera;
+
+        // TODO: временно
+        public GraphicsPath gp;
+        public Bitmap bmp;
+        //
 
 
         // Запретить new

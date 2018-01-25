@@ -1,7 +1,9 @@
 ﻿using GameEngineStage7.Core;
 using GameEngineStage7.Entities;
 using GameEngineStage7.Utils;
+using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 
@@ -25,28 +27,82 @@ namespace GameEngineStage7.Scenes
         {
             base.Init();
 
+            // Геометрия области рисования (камеры)
+            int width = gd.clientRectangle.Width - CONFIG.START_X * 2;
+            int height = gd.clientRectangle.Height - CONFIG.PANEL_HEIGHT - CONFIG.START_X * 2;
+
             //Cursor.Hide();
 
             // Загрузить ресурсы, необходимые для данной сцены
             gd.rm.Clear();
 
-            gd.worldImage = new Bitmap(CONFIG.WIND_WIDTH, CONFIG.WIND_HEIGHT, PixelFormat.Format32bppPArgb);
+            //gd.worldImage = new Bitmap(CONFIG.WIND_WIDTH, CONFIG.WIND_HEIGHT, PixelFormat.Format32bppPArgb);
+            gd.worldImage = new Bitmap(width, height, PixelFormat.Format32bppPArgb);
 
             //gd.rm.AddElementAsImage("box", Box.GetBox(100, 100, true));
 
             // Создать и загружить фон для раунда
-            gd.rm.AddElementAsImage("backofround", Gradient.GetImage(Color.Blue, Color.Green, gd.clientRectangle.Width, CONFIG.WIND_HEIGHT, 0));
+            gd.rm.AddElementAsImage("backofround", Gradient.GetImage(Color.Blue, Color.Green, width, height, 0));
             gd.backOfRound = new ImageObject("backofround", gd);
             gd.backOfRound.SetImage(gd.rm.GetImage("backofround"));
             gd.backOfRound.SetLayer(0);
             gd.backOfRound.SetPosition(0.0f, 0.0f);
             // Добавить объект на сцену
-            objects.Add(gd.backOfRound);
+            //objects.Add(gd.backOfRound);
 
             // Создать игровую панель
             gd.gamePanel = new GamePanel("gamePanel", gd);
             gd.gamePanel.SetImage(Box.GetBox(gd.clientRectangle.Width-1 , CONFIG.PANEL_HEIGHT, false));
             gd.gamePanel.SetPosition(0.0f, 0.0f);
+
+            // Создание ландшафта с использованием шума Перлина
+            Perlin p = new Perlin(CONFIG.PERLIN_MATRIX_SIZE, CONFIG.PERLIN_MATRIX_SIZE, CONFIG.PERLIN_OCTAVES);
+            // получить карту высот со значениями из диапазона [0, 1]
+            float[,] map = p.getMap();
+            int[] landshaft = new int[CONFIG.LANDSHAFT_LEN];
+            Random rnd = new Random();
+
+            // Выбрать строку, из которой брать данные
+            int randomLine = rnd.Next(CONFIG.PERLIN_MATRIX_SIZE);
+            // Перегрузить данные в отдельный массив с нормализацией по высоте области отображения
+            for (int i = 0; i < CONFIG.LANDSHAFT_LEN; i++)
+            {
+                landshaft[i] = (int)(map[randomLine, i] * 2 * height / 3);
+            }
+
+            // Создать замкнутую ломаную линию по данным из массива точек
+            gd.gp = new GraphicsPath();
+            Point pt, pt1, pt2 = new Point(0, 0);
+            int tile_size = width / (CONFIG.LANDSHAFT_LEN - 2);
+
+            for (int i = 0; i < CONFIG.LANDSHAFT_LEN - 1; i++)
+            {
+                pt1 = new Point(i * tile_size, height - landshaft[i]);
+                pt2 = new Point((i + 1) * tile_size, height - landshaft[i + 1]);
+                gd.gp.AddLine(pt1, pt2);
+            }
+
+            // Нарисовать еще две прямые линии
+            pt = new Point(CONFIG.LANDSHAFT_LEN * tile_size, height);
+            gd.gp.AddLine(pt2, pt);
+            pt1 = new Point(0, height);
+            gd.gp.AddLine(pt, pt1);
+
+            // Замкнуть котур
+            gd.gp.CloseFigure();
+
+            // Отрисовка полученной фигуры в графический файл
+            gd.bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+            Graphics gg = Graphics.FromImage(gd.bmp);
+            gg.Clear(Color.Transparent);
+            gg.FillPath(Brushes.White, gd.gp);
+            //gd.bmp.MakeTransparent(Color.Black);
+            // TODO: чтение попиксельно изображения (для последующей обработки удобнее сделать развертку ???????)
+            //Color c = gd.bmp.GetPixel(0, 0);
+            //Color cc = Color.FromArgb(254, 0, 0, 0);
+            
+            
+
 
 
 
@@ -145,8 +201,10 @@ namespace GameEngineStage7.Scenes
             // Вывод игровой панели
             gd.gamePanel.Render(g);
 
-            // Вывод того, что виидит камера
-            gd.camera.Render(g);
+            // Вывод того, что видит камера
+            //gd.camera.Render(g);
+
+            g.DrawImage(gd.bmp, 32, 32);
 
         }
 

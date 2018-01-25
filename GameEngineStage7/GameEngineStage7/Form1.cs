@@ -9,6 +9,9 @@ namespace GameEngineStage7
 {
     public partial class Form1 : Form
     {
+
+        // TODO: все текстовые строки перед началом игры преобразовать в картинки и положить в менеджер ресурсов
+
         private string old_title;	// Оригинальный текст в заголовке окна
 
         private Timer timer = new Timer();
@@ -25,6 +28,7 @@ namespace GameEngineStage7
 
         public Form1()
         {
+            this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             InitializeComponent();
         }
 
@@ -33,6 +37,7 @@ namespace GameEngineStage7
             // Размер окна программы
             this.Width = CONFIG.WIND_WIDTH;
             this.Height = CONFIG.WIND_HEIGHT;
+            this.BackColor = Color.Transparent;
 
             // Настройки окна программы
             KeyPreview = true;

@@ -26,11 +26,13 @@ namespace GameEngineStage7.Entities
 
         public GamePanel(string id, GameData gd) : base(id, gd)
         {
-            fnt = new Font("Arial", 15, FontStyle.Bold);
+            fnt = new Font("Arial", 13, FontStyle.Bold);
         }
 
         public override void Render(Graphics g)
         {
+            float posX;
+
             base.Render(g);
 
             // Одноразовый расчет параметров
@@ -38,10 +40,29 @@ namespace GameEngineStage7.Entities
             {
                 strPowerLen = (int)g.MeasureString(strPower, fnt).Width;
             }
+            if (strAngleLen == 0)
+            {
+                strAngleLen = (int)g.MeasureString(strAngle, fnt).Width;
+            }
+            if (placeHolderLen == 0)
+            {
+                placeHolderLen = (int)g.MeasureString(placeHolder, fnt).Width;
+            }
+
 
             // Вывести надписи на панели
-            g.DrawString(strPower, fnt, Brushes.Black, GetPosition().X + 4, GetPosition().Y + 4);
-            g.DrawString(placeHolder, fnt, Brushes.Black, GetPosition().X + 4 + strPowerLen, GetPosition().Y + 4);
+            posX = GetPosition().X + 8;
+            g.DrawString(strPower, fnt, Brushes.Black, posX, GetPosition().Y + 4);
+            posX += strPowerLen;
+            g.DrawString(placeHolder, fnt, Brushes.Black, posX, GetPosition().Y + 4);
+            posX += placeHolderLen;
+            g.DrawString(strAngle, fnt, Brushes.Black, posX, GetPosition().Y + 4);
+            posX += strAngleLen;
+            g.DrawString(placeHolder, fnt, Brushes.Black, posX, GetPosition().Y + 4);
+            posX += placeHolderLen * 2;
+            g.DrawString("User", fnt, Brushes.Red, posX, GetPosition().Y + 4);
+            posX += placeHolderLen * 5;
+            g.DrawString("Baby Missile", fnt, Brushes.Black, posX, GetPosition().Y + 4);
         }
     }
 }
