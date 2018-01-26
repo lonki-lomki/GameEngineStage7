@@ -37,7 +37,7 @@ namespace GameEngineStage7.Scenes
             gd.rm.Clear();
 
             //gd.worldImage = new Bitmap(CONFIG.WIND_WIDTH, CONFIG.WIND_HEIGHT, PixelFormat.Format32bppPArgb);
-            gd.worldImage = new Bitmap(width, height, PixelFormat.Format32bppPArgb);
+            //gd.worldImage = new Bitmap(width, height, PixelFormat.Format32bppArgb);
 
             //gd.rm.AddElementAsImage("box", Box.GetBox(100, 100, true));
 
@@ -48,7 +48,7 @@ namespace GameEngineStage7.Scenes
             gd.backOfRound.SetLayer(0);
             gd.backOfRound.SetPosition(0.0f, 0.0f);
             // Добавить объект на сцену
-            //objects.Add(gd.backOfRound);
+            objects.Add(gd.backOfRound);
 
             // Создать игровую панель
             gd.gamePanel = new GamePanel("gamePanel", gd);
@@ -94,14 +94,15 @@ namespace GameEngineStage7.Scenes
             // Отрисовка полученной фигуры в графический файл
             gd.bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
             Graphics gg = Graphics.FromImage(gd.bmp);
-            gg.Clear(Color.Transparent);
-            gg.FillPath(Brushes.White, gd.gp);
-            //gd.bmp.MakeTransparent(Color.Black);
+            //gg.Clear(Color.Transparent);
+            gg.FillPath(Brushes.Black, gd.gp);
+            //gd.bmp.MakeTransparent(Color.White);
             // TODO: чтение попиксельно изображения (для последующей обработки удобнее сделать развертку ???????)
             //Color c = gd.bmp.GetPixel(0, 0);
             //Color cc = Color.FromArgb(254, 0, 0, 0);
-            
-            
+            gg.Dispose();
+
+            //gd.bmp.Save("test.png", ImageFormat.Png);
 
 
 
@@ -202,9 +203,9 @@ namespace GameEngineStage7.Scenes
             gd.gamePanel.Render(g);
 
             // Вывод того, что видит камера
-            //gd.camera.Render(g);
+            gd.camera.Render(g);
 
-            g.DrawImage(gd.bmp, 32, 32);
+            //g.DrawImage(gd.bmp, 32, 32);
 
         }
 

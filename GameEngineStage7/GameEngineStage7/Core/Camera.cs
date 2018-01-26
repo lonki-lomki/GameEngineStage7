@@ -39,11 +39,12 @@ namespace GameEngineStage7.Core
 
 
             // Лист для отрисовки объектов
-            Graphics gg = Graphics.FromImage(gd.worldImage);
-            gg.CompositingMode = CompositingMode.SourceCopy;
-            gg.InterpolationMode = InterpolationMode.NearestNeighbor;
+            //Graphics gg = Graphics.FromImage(gd.worldImage);
+            //gg.CompositingMode = CompositingMode.SourceCopy;
+            //gg.CompositingMode = CompositingMode.SourceOver;
+            //gg.InterpolationMode = InterpolationMode.NearestNeighbor;
             // Очистить прозрачным цветом
-            gg.Clear(Color.Transparent);
+            //gg.Clear(Color.Transparent);
 
             //...Нарисовать объекты в мировых координатах и вывести часть, попадающую в область видимости камеры
 
@@ -55,18 +56,20 @@ namespace GameEngineStage7.Core
                 {
                     if (ent.GetLayer() == i)
                     {
-                        ent.Render(gg);
+                        ent.Render(g);
                     }
                 }
             }
 
             //gg.DrawImage(gd.rm.GetImage("box"), 50, 50);
             //gg.FillPath(Brushes.Black, gd.gp);
-            gg.DrawImage(gd.bmp, 10, 10);
+            g.DrawImage(gd.bmp, 0, 0);
+
+            //gg.Dispose();
 
             // Вывести часть слоя с объектами, которая попадает в поле зрения камеры
             //g.DrawImage(gd.worldImage, new Rectangle(geometry.X, geometry.Y, geometry.Width, geometry.Height), new Rectangle(pointOfView, new Size(CONFIG.VIEWPORT_WIDTH, CONFIG.VIEWPORT_HEIGHT)), GraphicsUnit.Pixel);
-            g.DrawImage(gd.worldImage, new Rectangle(geometry.X, geometry.Y, geometry.Width, geometry.Height), new Rectangle(pointOfView, new Size(geometry.Width, geometry.Height)), GraphicsUnit.Pixel);
+            /////g.DrawImage(gd.worldImage, new Rectangle(geometry.X, geometry.Y, geometry.Width, geometry.Height), new Rectangle(pointOfView, new Size(geometry.Width, geometry.Height)), GraphicsUnit.Pixel);
 
             // Нарисовать границы области видимости игрового поля
             g.DrawRectangle(Pens.LightGreen, geometry.X, geometry.Y, geometry.Width, geometry.Height);

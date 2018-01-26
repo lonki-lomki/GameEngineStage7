@@ -11,6 +11,7 @@ namespace GameEngineStage7
     {
 
         // TODO: все текстовые строки перед началом игры преобразовать в картинки и положить в менеджер ресурсов
+        // TODO: прозрачность работает, но Render для Entity должно учитывать коорднаты камеры
 
         private string old_title;	// Оригинальный текст в заголовке окна
 
@@ -28,16 +29,16 @@ namespace GameEngineStage7
 
         public Form1()
         {
-            this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+            //this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             InitializeComponent();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             // Размер окна программы
-            this.Width = CONFIG.WIND_WIDTH;
-            this.Height = CONFIG.WIND_HEIGHT;
-            this.BackColor = Color.Transparent;
+            Width = CONFIG.WIND_WIDTH;
+            Height = CONFIG.WIND_HEIGHT;
+            //this.BackColor = Color.Magenta;
 
             // Настройки окна программы
             KeyPreview = true;
@@ -176,7 +177,7 @@ namespace GameEngineStage7
             // Вывести фоновое изображение, если оно есть
             if (gd.backgroundImage != null)
             {
-                g.DrawImage(gd.backgroundImage, 0.0f, 0.0f);
+                //g.DrawImage(gd.backgroundImage, 0.0f, 0.0f);
             }
 
             // Вызвать метод отображения текущей сцены

@@ -25,7 +25,7 @@ namespace GameEngineStage7.Utils
         /// <param name="angle">угол поворота градиента (только 2 значения: 0 - горизонтальный градиент, 90 - вертикальный градиент)</param>
         public static Image GetImage(Color c1, Color c2, int w, int h, int angle)
         {
-            Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppPArgb);
+            Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
             Graphics gr = Graphics.FromImage(bmp);
             Pen pen = new Pen(Color.LightGray, 1);
 
