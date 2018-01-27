@@ -55,6 +55,7 @@
     <Compile Include="Entities\Bullet.cs" />
     <Compile Include="Entities\GamePanel.cs" />
     <Compile Include="Entities\ImageObject.cs" />
+    <Compile Include="Entities\Landshaft.cs" />
     <Compile Include="Entities\Tank.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

@@ -23,10 +23,15 @@ namespace GameEngineStage7.Core
 
         public Camera(Rectangle geom)
         {
-            geometry = new Rectangle(geom.Location, geom.Size);
+            Geometry = new Rectangle(geom.Location, geom.Size);
             pointOfView = new Point(0, 0);
             gd = GameData.Instance;
         }
+
+        /// <summary>
+        /// Сеттер и геттер для поля geometry
+        /// </summary>
+        public Rectangle Geometry { get => geometry; set => geometry = value; }
 
         /// <summary>
         /// Отображение части игрового мира, который попадает в поле зрения камеры
@@ -63,7 +68,7 @@ namespace GameEngineStage7.Core
 
             //gg.DrawImage(gd.rm.GetImage("box"), 50, 50);
             //gg.FillPath(Brushes.Black, gd.gp);
-            g.DrawImage(gd.bmp, 0, 0);
+            //g.DrawImage(gd.bmp, Geometry.X, Geometry.Y);
 
             //gg.Dispose();
 
@@ -72,7 +77,7 @@ namespace GameEngineStage7.Core
             /////g.DrawImage(gd.worldImage, new Rectangle(geometry.X, geometry.Y, geometry.Width, geometry.Height), new Rectangle(pointOfView, new Size(geometry.Width, geometry.Height)), GraphicsUnit.Pixel);
 
             // Нарисовать границы области видимости игрового поля
-            g.DrawRectangle(Pens.LightGreen, geometry.X, geometry.Y, geometry.Width, geometry.Height);
+            g.DrawRectangle(Pens.LightGreen, Geometry.X, Geometry.Y, Geometry.Width, Geometry.Height);
 
         }
     }

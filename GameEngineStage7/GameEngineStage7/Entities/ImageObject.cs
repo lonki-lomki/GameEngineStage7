@@ -22,8 +22,8 @@ namespace GameEngineStage7.Entities
 
         public override void Render(Graphics g)
         {
-            //base.Render(g);
-            g.DrawImage(GetImage(), position);
+            base.Render(g);
+            //g.DrawImage(GetImage(), position);
         }
     }
 }

@@ -635,6 +635,11 @@ namespace GameEngineStage7.Core
             // Для этой игры отображение объекта выполняется по координатам левого верхнего угла --его центра
             // !!! WARNING !!!
 
+            // !!! WARNING !!!
+            // Для этой игры Entity рисует в области камеры, а не в координатах экрана. Если надо нарисовать в экранных координатах, надо переопределить этот метод!!!
+            // !!! WARNING !!!
+
+
             if (img != null)
             {
                 // Проверить необходимость поворота изображения
@@ -649,12 +654,12 @@ namespace GameEngineStage7.Core
                         graphics.TranslateTransform(-(float)img.Width / 2, -(float)img.Height / 2);
                         graphics.DrawImage(img, 0.0f, 0.0f, img.Width, img.Height);
                     }
-                    g.DrawImage(returnBitmap, GetPosition().X, GetPosition().Y, GetSize().Width, GetSize().Height);
+                    g.DrawImage(returnBitmap, GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, GetSize().Width, GetSize().Height);
                 }
                 else
                 {
                     // Вывод изображения на экран без поворота
-                    g.DrawImage(img, GetPosition().X, GetPosition().Y, GetSize().Width, GetSize().Height);
+                    g.DrawImage(img, GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, GetSize().Width, GetSize().Height);
                     // Для корректного отображения этой функцией необходимо, чтобы DPI изображения совпадал с DPI картинки!!!
                     //                    g.DrawImageUnscaled(img, (int)(GetPosition().X - GetSize().Width / 2), (int)(GetPosition().Y - GetSize().Height / 2));
                 }

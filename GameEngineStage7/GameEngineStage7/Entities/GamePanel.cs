@@ -33,7 +33,8 @@ namespace GameEngineStage7.Entities
         {
             float posX;
 
-            base.Render(g);
+            //base.Render(g);
+            g.DrawImage(GetImage(), GetPosition().X, GetPosition().Y, GetSize().Width, GetSize().Height);
 
             // Одноразовый расчет параметров
             if (strPowerLen == 0)

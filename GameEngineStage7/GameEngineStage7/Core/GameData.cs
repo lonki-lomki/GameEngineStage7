@@ -48,6 +48,8 @@ namespace GameEngineStage7.Core
 
         public Camera camera;
 
+        public Landshaft landshaft;
+
         // TODO: временно
         public GraphicsPath gp;
         public Bitmap bmp;
