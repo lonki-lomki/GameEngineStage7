@@ -55,6 +55,8 @@ namespace GameEngineStage7.Core
 
             // Цикл отображения всех объектов на всех уровнях
             // Цикл по уровням (пока 3 уровня)
+            //!!!!!!!! ДЛЯ ЭТОЙ ИГРЫ ОТРИСОВАТЬ ДВА КРАЙНИХ УРОВНЯ. СРЕДНИЙ УРОВЕРЬ ОТРИСОВЫВАЕТСЯ В ЛАНДШАФТЕ!!!!!!!
+            /*
             for (int i = 0; i < 3; i++)
             {
                 foreach (Entity ent in gd.world.objects)
@@ -65,10 +67,26 @@ namespace GameEngineStage7.Core
                     }
                 }
             }
+            */
+            foreach (Entity ent in gd.world.objects)
+            {
+                if (ent.GetLayer() == 0)
+                {
+                    ent.Render(g);
+                }
+            }
 
-            //gg.DrawImage(gd.rm.GetImage("box"), 50, 50);
-            //gg.FillPath(Brushes.Black, gd.gp);
-            //g.DrawImage(gd.bmp, Geometry.X, Geometry.Y);
+            // Отрисовка ландшафта
+            gd.landshaft.Render(g);
+
+            foreach (Entity ent in gd.world.objects)
+            {
+                if (ent.GetLayer() == 2)
+                {
+                    ent.Render(g);
+                }
+            }
+
 
             //gg.Dispose();
 

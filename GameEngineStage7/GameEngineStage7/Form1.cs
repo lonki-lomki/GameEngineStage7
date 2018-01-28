@@ -12,6 +12,7 @@ namespace GameEngineStage7
 
         // TODO: все текстовые строки перед началом игры преобразовать в картинки и положить в менеджер ресурсов
         // TODO: прозрачность работает, но Render для Entity должно учитывать коорднаты камеры
+        // TODO: попробовать формат изображения Format8bppIndexed - должно работать в 4 раза быстрее
 
         private string old_title;	// Оригинальный текст в заголовке окна
 
@@ -220,6 +221,8 @@ namespace GameEngineStage7
         ///////////////////////////////////////////////////////////////////////
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
+            gd.curScene.MouseDown(sender, e);
+            /*
             // Левая кнопка
             if (e.Button == MouseButtons.Left)
             {
@@ -237,6 +240,7 @@ namespace GameEngineStage7
                     ent.OnRightMouseButtonClick(e);
                 }
             }
+            */
         }
 
     }

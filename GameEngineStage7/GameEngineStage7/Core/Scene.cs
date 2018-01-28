@@ -54,7 +54,7 @@ namespace GameEngineStage7.Core
             gd.PressedKeys.Remove(e.KeyCode);
         }
 
-        virtual public void MouseDown()
+        virtual public void MouseDown(object sender, MouseEventArgs e)
         {
 
         }

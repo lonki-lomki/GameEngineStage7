@@ -14,6 +14,36 @@ namespace GameEngineStage7.Entities
     /// </summary>
     public class Landshaft : Entity
     {
+        /// <summary>
+        /// Количество пикселей в изображении
+        /// </summary>
+        private int pixelCount;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private Rectangle rect;
+
+        /// <summary>
+        /// Глубина цвета для пикселя (32 = ARGB)
+        /// </summary>
+        private int colorDepth = 32;
+
+        /// <summary>
+        /// Количество байт на цвет (32/4)
+        /// </summary>
+        private int step = 4;
+
+        private int width;
+
+        private int height;
+
+        /// <summary>
+        /// Массив для хранения байтов изображения
+        /// </summary>
+        byte[] pixels;
+
+
         public Landshaft()
         {
         }
@@ -24,6 +54,9 @@ namespace GameEngineStage7.Entities
 
         public Landshaft(string id, GameData gd) : base(id, gd)
         {
+
+            width = gd.camera.Geometry.Width;
+            height = gd.camera.Geometry.Height;
 
             // Создание ландшафта с использованием шума Перлина
             Perlin p = new Perlin(CONFIG.PERLIN_MATRIX_SIZE, CONFIG.PERLIN_MATRIX_SIZE, CONFIG.PERLIN_OCTAVES);
@@ -37,56 +70,70 @@ namespace GameEngineStage7.Entities
             // Перегрузить данные в отдельный массив с нормализацией по высоте области отображения
             for (int i = 0; i < CONFIG.LANDSHAFT_LEN; i++)
             {
-                landshaft[i] = (int)(map[randomLine, i] * 2 * gd.camera.Geometry.Height / 3);
+                landshaft[i] = (int)(map[randomLine, i] * 2 * height / 3);
             }
 
             // Создать замкнутую ломаную линию по данным из массива точек
             gd.gp = new GraphicsPath();
             Point pt, pt1, pt2 = new Point(0, 0);
-            int tile_size = gd.camera.Geometry.Width / (CONFIG.LANDSHAFT_LEN - 2);
+            int tile_size = width / (CONFIG.LANDSHAFT_LEN - 2);
 
             for (int i = 0; i < CONFIG.LANDSHAFT_LEN - 1; i++)
             {
-                pt1 = new Point(i * tile_size, gd.camera.Geometry.Height - landshaft[i]);
-                pt2 = new Point((i + 1) * tile_size, gd.camera.Geometry.Height - landshaft[i + 1]);
+                pt1 = new Point(i * tile_size, height - landshaft[i]);
+                pt2 = new Point((i + 1) * tile_size, height - landshaft[i + 1]);
                 gd.gp.AddLine(pt1, pt2);
             }
 
             // Нарисовать еще две прямые линии
-            pt = new Point(CONFIG.LANDSHAFT_LEN * tile_size, gd.camera.Geometry.Height);
+            pt = new Point(CONFIG.LANDSHAFT_LEN * tile_size, height);
             gd.gp.AddLine(pt2, pt);
-            pt1 = new Point(0, gd.camera.Geometry.Height);
+            pt1 = new Point(0, height);
             gd.gp.AddLine(pt, pt1);
 
             // Замкнуть котур
             gd.gp.CloseFigure();
 
             // Отрисовка полученной фигуры в графический файл
-            gd.bmp = new Bitmap(gd.camera.Geometry.Width, gd.camera.Geometry.Height, PixelFormat.Format32bppArgb);
+            gd.bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
             Graphics gg = Graphics.FromImage(gd.bmp);
-            //gg.Clear(Color.Transparent);
             gg.FillPath(Brushes.Black, gd.gp);
-            //gd.bmp.MakeTransparent(Color.White);
-            // TODO: чтение попиксельно изображения (для последующей обработки удобнее сделать развертку ???????)
-            //Color c = gd.bmp.GetPixel(0, 0);
-            //Color cc = Color.FromArgb(254, 0, 0, 0);
             gg.Dispose();
-
-            //gd.bmp.Save("test.png", ImageFormat.Png);
-
+            
             SetImage(gd.bmp);
 
+            // Настройка параметров для хранения изображения как массива байтов
+            pixelCount = width * height;
+            pixels = new byte[pixelCount * step];
+            rect = new Rectangle(0, 0, width, height);
 
         }
 
         public override void Render(Graphics g)
         {
+            // Отрисовка объектов внутри картинки ландшафта
+            Graphics gg = Graphics.FromImage(GetImage());
+            // Установить атрибут, который позволяет использовать прозрачность при рисовании на картинке
+            gg.CompositingMode = CompositingMode.SourceCopy;
+
+            foreach (Entity ent in gd.world.objects)
+            {
+                if (ent.GetLayer() == 1)
+                {
+                    ent.Render(gg);
+                }
+            }
+
+            // Отрисовка изображения
             base.Render(g);
+            
         }
 
         public override void Update(int delta)
         {
             base.Update(delta);
+
+            Reload();
         }
 
         /// <summary>
@@ -94,76 +141,152 @@ namespace GameEngineStage7.Entities
         /// </summary>
         public void Reload()
         {
+            // Преобразование изображения в пиксельный массив
             Bitmap bmp = new Bitmap(GetImage());
-            int pixelCount = bmp.Width * bmp.Height;
-            Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
-            int depth = 32;
             BitmapData bitmapData = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
-            int step = depth / 8;
-            byte[] pixels = new byte[pixelCount * step];
             IntPtr iptr = bitmapData.Scan0;
             Marshal.Copy(iptr, pixels, 0, pixels.Length);
 
+            /*
+            // Сохранить массив пикселей в файл
             MemoryStream ms = new MemoryStream(pixels);
-
             FileStream fs = new FileStream("pixels.bin", FileMode.OpenOrCreate);
             ms.CopyTo(fs);
             fs.Flush();
             fs.Close();
-
-
-            /*
-            // Конвертация изображения в байтовый массив
-            // !!! Получился файл формата PNG!!!
-            ImageConverter converter = new ImageConverter();
-            byte[] bytes = (byte[])converter.ConvertTo(GetImage(), typeof(byte[]));
-
-            //bytes[0] = 255;
-            //bytes[1] = 255;
-            //bytes[2] = 255;
-            //bytes[3] = 255;
-
-            // Обратная конвертация из байтового массива в изображение
-            Bitmap bmp;
-            MemoryStream ms = new MemoryStream(bytes);
-
-            FileStream fs = new FileStream("bytes.bin", FileMode.OpenOrCreate);
-            ms.CopyTo(fs);
-            fs.Flush();
-            fs.Close();
-
-            //bmp = new Bitmap(ms);
-
-            //SetImage(bmp);
-
-            ms.Close();
             */
 
-            //Bitmap bmp = new Bitmap(GetImage());
-            /*
+
+            //RemoveColor(Color.FromArgb(255, 255, 1, 1));
+
+            byte a1, r1, g1, b1;
+            byte a2, r2, g2, b2;
+
             // Цикл по всем столбцам исходного изображения
-            for (int i = 0; i < bmp.Width; i++)
+            for (int i = 0; i < width; i++)
             {
                 // Цикл по пикселям в столбце
-                for (int j = bmp.Height-1; j >= 0; j--)
+                for (int j = height - 1; j >= 0; j--)
                 {
-                    Color c = bmp.GetPixel(i, j);
-                    
-                    if (c == Color.Black)
+                    //Color c1 = GetPixel(i, j);  // Верхий пиксель
+                    //Color c2 = GetPixel(i, j + 1);  // Нижний пиксель
+                    GetPixel(i, j, out r1, out g1, out b1, out a1);  // Верхий пиксель
+                    GetPixel(i, j + 1, out r2, out g2, out b2, out a2);  // Нижний пиксель
+                    // Проверить, что ниже верхнего пикселя - пусто
+                    //if (c1.A == 255 && c2.A != 255)
+                    if (a1 == 255 && a2 != 255)
                     {
-                        c = Color.White;
-                    };
-                    if (c == Color.White)
-                    {
-                        c = Color.Black;
+                        // Переместить пиксель на строку вниз, вместо себя оставить пустой пиксель
+                        SetPixel(i, j, 0, 0, 0, 0);
+                        //SetPixel(i, j + 1, c1.R, c1.G, c1.B, c1.A);
+                        SetPixel(i, j + 1, r1, g1, b1, a1);
                     }
-                    
-                    //bmp.SetPixel(i, j, Color.White);
                 }
             }
+            
+
+
+            // Обратное преобразование пиксельного массива в изображение
+            Marshal.Copy(pixels, 0, iptr, pixels.Length);
+            bmp.UnlockBits(bitmapData);
 
             SetImage(bmp);
-            */
         }
+
+        /// <summary>
+        /// Получить значение цвета пикселя из массива пикселей
+        /// </summary>
+        /// <param name="x">координата Х пикселя</param>
+        /// <param name="y">координата У пикселя</param>
+        /// <returns>цвет пикселя по данным координатам</returns>
+        public Color GetPixel(int x, int y)
+        {
+            int index = (y * width + x) * step;
+            // Проверки выхода за пределы изображения
+            if ((index+step) >= pixels.Length)
+            {
+                return Color.White;
+            }
+            if (index < 0)
+            {
+                return Color.White;
+            }
+
+            return Color.FromArgb(pixels[index + 3], pixels[index + 2], pixels[index + 1], pixels[index]);
+        }
+
+        public void GetPixel(int x, int y, out byte r, out byte g, out byte b, out byte a)
+        {
+            int index = (y * width + x) * step;
+            // Проверки выхода за пределы изображения
+            if ((index + step) >= pixels.Length)
+            {
+                r = 255;
+                g = 255;
+                b = 255;
+                a = 255;
+                return;
+            }
+            if (index < 0)
+            {
+                r = 255;
+                g = 255;
+                b = 255;
+                a = 255;
+                return;
+            }
+            a = pixels[index + 3];
+            r = pixels[index + 2];
+            g = pixels[index + 1];
+            b = pixels[index];
+            return;
+        }
+
+        /// <summary>
+        /// Установить цвет пикселя в массиве пикселей
+        /// </summary>
+        /// <param name="x">координата Х пикселя</param>
+        /// <param name="y">координата Х пикселя</param>
+        /// <param name="r">red компонента</param>
+        /// <param name="g">green компонента</param>
+        /// <param name="b">blue компонента</param>
+        /// <param name="a">alpha компонента</param>
+        public void SetPixel(int x, int y, byte r, byte g, byte b, byte a)
+        {
+            int index = (y * width + x) * step;
+            // Проверки выхода за пределы изображения
+            if ((index + step) >= pixels.Length)
+            {
+                return;
+            }
+            if (index < 0)
+            {
+                return;
+            }
+
+            pixels[index] = b;
+            pixels[index + 1] = g;
+            pixels[index + 2] = r;
+            pixels[index + 3] = a;
+        }
+
+        /// <summary>
+        /// Удалить из массива пикселей пиксель с данным цветом (заменить на прозрачный пиксель)
+        /// </summary>
+        /// <param name="color">цвет удаляемых пикселей</param>
+        public void RemoveColor(Color color)
+        {
+            for (int i = 0; i < pixels.Length; i+=step)
+            {
+                if (pixels[i] == color.B && pixels[i+1] == color.G && pixels[i+2] == color.R)
+                {
+                    pixels[i] = 0;
+                    pixels[i + 1] = 0;
+                    pixels[i + 2] = 0;
+                    pixels[i + 3] = 0;
+                }
+            }
+        }
+
     }
 }

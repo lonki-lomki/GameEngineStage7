@@ -1,10 +1,7 @@
 ﻿using GameEngineStage7.Core;
 using GameEngineStage7.Entities;
 using GameEngineStage7.Utils;
-using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 namespace GameEngineStage7.Scenes
@@ -42,7 +39,7 @@ namespace GameEngineStage7.Scenes
             //gd.rm.AddElementAsImage("box", Box.GetBox(100, 100, true));
 
             // Создать и загружить фон для раунда
-            gd.rm.AddElementAsImage("backofround", Gradient.GetImage(Color.Blue, Color.Green, width, height, 0));
+            gd.rm.AddElementAsImage("backofround", Gradient.GetImage(Color.Blue, Color.Yellow, width, height, 0));
             gd.backOfRound = new ImageObject("backofround", gd);
             gd.backOfRound.SetImage(gd.rm.GetImage("backofround"));
             gd.backOfRound.SetLayer(0);
@@ -60,7 +57,7 @@ namespace GameEngineStage7.Scenes
             gd.landshaft.SetLayer(1);
             gd.landshaft.SetPosition(0.0f, 0.0f);
             // Добавить объект на сцену
-            objects.Add(gd.landshaft);
+            //objects.Add(gd.landshaft);
 
 
 
@@ -168,39 +165,25 @@ namespace GameEngineStage7.Scenes
         public override void Update(int delta)
         {
             base.Update(delta);
+            gd.landshaft.Update(delta);
+        }
 
-            // Проверка нажатых клавиш
-            if (gd.PressedKeys.Contains(Keys.Escape))
+        public override void MouseDown(object sender, MouseEventArgs e)
+        {
+            base.MouseDown(sender, e);
+
+            if (e.Button == MouseButtons.Left)
             {
-                Application.Exit();
+                Explosion expl = new Explosion("explosion", gd);
+                expl.SetPosition(e.X - gd.camera.Geometry.X * 2, e.Y - gd.camera.Geometry.Y * 2);   // перевести из координат экрана в координаты камеры минус размер панели (этот размер будет добавлен при отрисовке)
+                expl.SetLayer(1);
+                objects.Add(expl);
+                gd.world.Add(expl);
             }
-
-            PointF velocity = new PointF(0.0f, 0.0f);
-
-            if (gd.PressedKeys.Contains(Keys.D))
+            if (e.Button == MouseButtons.Right)
             {
-                velocity.X += 50.0f;
-            }
-            if (gd.PressedKeys.Contains(Keys.A))
-            {
-                velocity.X -= 50.0f;
-            }
-            if (gd.PressedKeys.Contains(Keys.S))
-            {
-                velocity.Y += 50.0f;
-            }
-            if (gd.PressedKeys.Contains(Keys.W))
-            {
-                velocity.Y -= 50.0f;
-            }
 
-            // Применить к игроку посчитанную скорость
-            //gd.player.SetVelocity(velocity.X, velocity.Y);
-
-            // Сдвинуть камеру, чтобы ГГ был по центру экрана
-            //Rectangle rect = gd.tmo.ViewPort;
-            //gd.tmo.ViewPort = new Rectangle((int)gd.player.GetPosition().X - rect.Width / 2 - CONFIG.START_X, (int)gd.player.GetPosition().Y - rect.Height / 2 - CONFIG.START_Y, rect.Width, rect.Height);
-
+            }
         }
     }
 }
