@@ -59,6 +59,13 @@ namespace GameEngineStage7.Scenes
             // Добавить объект на сцену
             //objects.Add(gd.landshaft);
 
+            // Создать танк
+            gd.tank = new Tank("tank", gd);
+            gd.tank.SetPosition(500, 32);
+            gd.tank.SetLayer(2);
+            //gd.tank.SetGravity(true);
+            // Добавить объект на сцену
+            objects.Add(gd.tank);
 
 
 

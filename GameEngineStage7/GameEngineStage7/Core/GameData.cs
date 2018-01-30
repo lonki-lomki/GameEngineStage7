@@ -55,6 +55,7 @@ namespace GameEngineStage7.Core
         public Bitmap bmp;
         //
 
+        public Tank tank;
 
         // Запретить new
         private GameData()

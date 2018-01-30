@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using GameEngineStage7.Core;
 
 namespace GameEngineStage7.Entities
@@ -28,6 +29,10 @@ namespace GameEngineStage7.Entities
 
         private int magDeflectors;
 
+        private int money;
+
+        private List<Weapon> weapons;
+
 
         public Tank()
         {
@@ -41,9 +46,22 @@ namespace GameEngineStage7.Entities
         {
         }
 
+        /// <summary>
+        /// Приземлить танк (сдвинуть вертикально вниз до контакта с землей)
+        /// </summary>
+        /// <returns>true, если танк коснулся земли</returns>
+        public bool Landing()
+        {
+            // Двигать вниз попиксельно танк до контакта с ландшафтом
+            // Факт контакта определять с помощью метода gd.landshaft.GetPixel();
+            return true;
+        }
+
         public override void Render(Graphics g)
         {
-            base.Render(g);
+            //base.Render(g);
+            //g.DrawImage(img, GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, GetSize().Width, GetSize().Height);
+            g.FillRectangle(Brushes.Green, GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, 16, 8);
         }
 
         public override void Update(int delta)

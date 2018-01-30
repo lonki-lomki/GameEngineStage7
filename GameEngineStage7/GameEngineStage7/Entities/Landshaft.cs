@@ -173,23 +173,23 @@ namespace GameEngineStage7.Entities
                     ////GetPixel(i, j, out r1, out g1, out b1, out a1);  // Верхий пиксель
                     int index = (j * width + i) * step;
                     a1 = pixels[index + 3];
-                    r1 = pixels[index + 2];
-                    g1 = pixels[index + 1];
-                    b1 = pixels[index];
+                    //r1 = pixels[index + 2];
+                    //g1 = pixels[index + 1];
+                    //b1 = pixels[index];
                     ////GetPixel(i, j + 1, out r2, out g2, out b2, out a2);  // Нижний пиксель
                     int index2 = ((j + 1) * width + i) * step;
                     if (index2 >= 0 && (index2+step) < pixels.Length)
                     {
                         a2 = pixels[index2 + 3];
-                        r2 = pixels[index2 + 2];
-                        g2 = pixels[index2 + 1];
-                        b2 = pixels[index2];
+                        //r2 = pixels[index2 + 2];
+                        //g2 = pixels[index2 + 1];
+                        //b2 = pixels[index2];
                     } else
                     {
                         a2 = 255;
-                        r2 = 255;
-                        g2 = 255;
-                        b2 = 255;
+                        //r2 = 255;
+                        //g2 = 255;
+                        //b2 = 255;
                     }
                     // Проверить, что ниже верхнего пикселя - пусто
                     //if (c1.A == 255 && c2.A != 255)
@@ -198,14 +198,14 @@ namespace GameEngineStage7.Entities
                         // Переместить пиксель на строку вниз, вместо себя оставить пустой пиксель
                         //SetPixel(i, j, 0, 0, 0, 0);
                         pixels[index + 3] = 0;
-                        pixels[index + 2] = 0;
-                        pixels[index + 1] = 0;
-                        pixels[index] = 0;
+                        //pixels[index + 2] = 0;
+                        //pixels[index + 1] = 0;
+                        //pixels[index] = 0;
                         //SetPixel(i, j + 1, r1, g1, b1, a1);
                         pixels[index2 + 3] = a1;
-                        pixels[index2 + 2] = r1;
-                        pixels[index2 + 1] = g1;
-                        pixels[index2] = b1;
+                        //pixels[index2 + 2] = r1;
+                        //pixels[index2 + 1] = g1;
+                        //pixels[index2] = b1;
                     }
                 }
             }

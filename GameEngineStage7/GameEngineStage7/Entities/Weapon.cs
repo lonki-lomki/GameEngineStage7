@@ -2,7 +2,7 @@
 
 namespace GameEngineStage7.Entities
 {
-    public class Bullet : Entity
+    public class Weapon : Entity
     {
     }
 }

@@ -52,7 +52,7 @@
     <Compile Include="Core\PhysWorld.cs" />
     <Compile Include="Core\ResourceManager.cs" />
     <Compile Include="Core\Scene.cs" />
-    <Compile Include="Entities\Bullet.cs" />
+    <Compile Include="Entities\Weapon.cs" />
     <Compile Include="Entities\Explosion.cs" />
     <Compile Include="Entities\GamePanel.cs" />
     <Compile Include="Entities\ImageObject.cs" />
@@ -100,7 +100,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Entities\Bullets\" />
+    <Folder Include="Entities\Weapons\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
