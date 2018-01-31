@@ -44,6 +44,7 @@ namespace GameEngineStage7.Entities
 
         public Tank(string id, GameData gd) : base(id, gd)
         {
+            //Landing();
         }
 
         /// <summary>
@@ -54,6 +55,23 @@ namespace GameEngineStage7.Entities
         {
             // Двигать вниз попиксельно танк до контакта с ландшафтом
             // Факт контакта определять с помощью метода gd.landshaft.GetPixel();
+
+            Bitmap bmp = new Bitmap(gd.landshaft.GetImage());
+
+            for (int i = (int)GetPosition().Y; i < gd.camera.Geometry.Height; i++)
+            {
+                //Color c = gd.landshaft.GetPixel((int)GetPosition().X, i);
+                Color c = bmp.GetPixel((int)GetPosition().X, i);
+                if (c.A == 255)
+                {
+                    // Коснулись земли - остановить цикл
+                    break;
+                }
+                SetPosition(GetPosition().X, i);
+            }
+
+            bmp.Dispose();
+
             return true;
         }
 
@@ -61,7 +79,7 @@ namespace GameEngineStage7.Entities
         {
             //base.Render(g);
             //g.DrawImage(img, GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, GetSize().Width, GetSize().Height);
-            g.FillRectangle(Brushes.Green, GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, 16, 8);
+            g.FillRectangle(Brushes.LightGreen, GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, 16, 8);
         }
 
         public override void Update(int delta)

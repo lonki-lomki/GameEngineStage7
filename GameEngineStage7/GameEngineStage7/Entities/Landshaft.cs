@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Runtime.InteropServices;
 using GameEngineStage7.Core;
 using GameEngineStage7.Utils;
@@ -133,7 +132,7 @@ namespace GameEngineStage7.Entities
         {
             base.Update(delta);
 
-            Reload();
+            //Reload();
         }
 
         /// <summary>
