@@ -11,7 +11,7 @@ namespace GameEngineStage7.Entities
         private string strAngle = "Angle:";
         private int strAngleLen = 0;
 
-        private string placeHolder = "000";
+        private string placeHolder = "0000";
         private int placeHolderLen = 0;
 
         private Font fnt;
@@ -53,17 +53,19 @@ namespace GameEngineStage7.Entities
 
             // Вывести надписи на панели
             posX = GetPosition().X + 8;
-            g.DrawString(strPower, fnt, Brushes.Black, posX, GetPosition().Y + 4);
+            g.DrawString(strPower, fnt, Brushes.Black, posX, GetPosition().Y + 6);
             posX += strPowerLen;
-            g.DrawString(placeHolder, fnt, Brushes.Black, posX, GetPosition().Y + 4);
+            //g.DrawString(placeHolder, fnt, Brushes.Black, posX, GetPosition().Y + 4);
+            g.DrawString(gd.currentTank.Power.ToString(), fnt, Brushes.Black, posX, GetPosition().Y + 6);
             posX += placeHolderLen;
-            g.DrawString(strAngle, fnt, Brushes.Black, posX, GetPosition().Y + 4);
+            g.DrawString(strAngle, fnt, Brushes.Black, posX, GetPosition().Y + 6);
             posX += strAngleLen;
-            g.DrawString(placeHolder, fnt, Brushes.Black, posX, GetPosition().Y + 4);
+            //g.DrawString(placeHolder, fnt, Brushes.Black, posX, GetPosition().Y + 6);
+            g.DrawString(gd.currentTank.Angle.ToString(), fnt, Brushes.Black, posX, GetPosition().Y + 6);
             posX += placeHolderLen * 2;
-            g.DrawString("User", fnt, Brushes.Red, posX, GetPosition().Y + 4);
+            g.DrawString(gd.currentTank.Name, fnt, new SolidBrush(gd.currentTank.Color), posX, GetPosition().Y + 6);
             posX += placeHolderLen * 5;
-            g.DrawString("Baby Missile", fnt, Brushes.Black, posX, GetPosition().Y + 4);
+            g.DrawString("Baby Missile", fnt, Brushes.Black, posX, GetPosition().Y + 6);
         }
     }
 }

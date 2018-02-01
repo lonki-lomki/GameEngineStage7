@@ -44,8 +44,37 @@ namespace GameEngineStage7.Entities
 
         public Tank(string id, GameData gd) : base(id, gd)
         {
-            //Landing();
+            // TODO: ВРЕМЕННО!!!! Позже размеры будут браться из картинки
+            SetSize(16, 16);
         }
+
+        public int Power
+        {
+            get => power;
+            set
+            {
+                power = value;
+                if (power < 0)
+                {
+                    power = 0;
+                }
+                if (power > maxPower)
+                {
+                    power = maxPower;
+                }
+            }
+        }
+
+        public int Angle { get => angle; set => angle = value; }
+        public string Name { get => name; set => name = value; }
+        public Color Color { get => color; set => color = value; }
+        public string WeaponName { get => weaponName; set => weaponName = value; }
+        public int MaxPower { get => maxPower; set => maxPower = value; }
+        public float Battery { get => battery; set => battery = value; }
+        public int Parachutes { get => parachutes; set => parachutes = value; }
+        public int Shields { get => shields; set => shields = value; }
+        public int MagDeflectors { get => magDeflectors; set => magDeflectors = value; }
+        public int Money { get => money; set => money = value; }
 
         /// <summary>
         /// Приземлить танк (сдвинуть вертикально вниз до контакта с землей)
@@ -61,7 +90,7 @@ namespace GameEngineStage7.Entities
             for (int i = (int)GetPosition().Y; i < gd.camera.Geometry.Height; i++)
             {
                 //Color c = gd.landshaft.GetPixel((int)GetPosition().X, i);
-                Color c = bmp.GetPixel((int)GetPosition().X, i);
+                Color c = bmp.GetPixel((int)GetPosition().X + (int)GetSize().Width / 2, i + (int)GetSize().Height / 2);
                 if (c.A == 255)
                 {
                     // Коснулись земли - остановить цикл
@@ -79,7 +108,7 @@ namespace GameEngineStage7.Entities
         {
             //base.Render(g);
             //g.DrawImage(img, GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, GetSize().Width, GetSize().Height);
-            g.FillRectangle(Brushes.LightGreen, GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, 16, 8);
+            g.FillRectangle(new SolidBrush(color), GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, GetSize().Width, GetSize().Height / 2);
         }
 
         public override void Update(int delta)

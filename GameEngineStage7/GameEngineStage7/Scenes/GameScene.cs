@@ -60,13 +60,18 @@ namespace GameEngineStage7.Scenes
             //objects.Add(gd.landshaft);
 
             // Создать танк
-            gd.tank = new Tank("tank", gd);
-            gd.tank.SetPosition(500, 32);
-            gd.tank.SetLayer(2);
-            gd.tank.Landing();
+            gd.currentTank = new Tank("tank", gd);
+            gd.currentTank.SetPosition(500, 32);
+            gd.currentTank.SetLayer(2);
+            gd.currentTank.MaxPower = 1000;
+            gd.currentTank.Power = 200;
+            gd.currentTank.Angle = 60;
+            gd.currentTank.Name = "Username";
+            gd.currentTank.Color = Color.ForestGreen;
+            gd.currentTank.Landing();
             //gd.tank.SetGravity(true);
             // Добавить объект на сцену
-            objects.Add(gd.tank);
+            objects.Add(gd.currentTank);
 
 
 
@@ -122,6 +127,16 @@ namespace GameEngineStage7.Scenes
             if (e.KeyCode == Keys.R)
             {
                 gd.landshaft.Reload();
+            }
+
+            if (e.KeyCode == Keys.PageUp)
+            {
+                gd.currentTank.Power += 25;
+            }
+
+            if (e.KeyCode == Keys.PageDown)
+            {
+                gd.currentTank.Power -= 25;
             }
 
             /*
