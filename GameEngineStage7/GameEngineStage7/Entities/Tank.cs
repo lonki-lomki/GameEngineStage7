@@ -65,7 +65,23 @@ namespace GameEngineStage7.Entities
             }
         }
 
-        public int Angle { get => angle; set => angle = value; }
+        public int Angle
+        {
+            get => angle;
+            set
+            {
+                angle = value;
+                if (angle < 0)
+                {
+                    angle = 0;
+                }
+                if (angle > 180)
+                {
+                    angle = 180;
+                }
+            }
+        }
+
         public string Name { get => name; set => name = value; }
         public Color Color { get => color; set => color = value; }
         public string WeaponName { get => weaponName; set => weaponName = value; }

@@ -129,14 +129,40 @@ namespace GameEngineStage7.Scenes
                 gd.landshaft.Reload();
             }
 
+            // Клавиша PageUp - увеличение мощности выстрела
             if (e.KeyCode == Keys.PageUp)
             {
                 gd.currentTank.Power += 25;
             }
 
+            // Клавиша PageDown - уменьшение мощности выстрела
             if (e.KeyCode == Keys.PageDown)
             {
                 gd.currentTank.Power -= 25;
+            }
+
+            // Клавиша Up - увеличение мощности выстрела
+            if (e.KeyCode == Keys.Up)
+            {
+                gd.currentTank.Power += 5;
+            }
+
+            // Клавиша Down - уменьшение мощности выстрела
+            if (e.KeyCode == Keys.Down)
+            {
+                gd.currentTank.Power -= 5;
+            }
+
+            // Клавиша Left - вращение дула против часовой стрелки
+            if (e.KeyCode == Keys.Left)
+            {
+                gd.currentTank.Angle += 5;
+            }
+
+            // Клавиша Right - вращение дула по часовой стрелке
+            if (e.KeyCode == Keys.Right)
+            {
+                gd.currentTank.Angle -= 5;
             }
 
             /*
