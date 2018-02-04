@@ -65,7 +65,7 @@ namespace GameEngineStage7.Scenes
             gd.currentTank.SetLayer(2);
             gd.currentTank.MaxPower = 1000;
             gd.currentTank.Power = 200;
-            gd.currentTank.Angle = 60;
+            gd.currentTank.Angle = new Angle(60);
             gd.currentTank.Name = "Username";
             gd.currentTank.Color = Color.ForestGreen;
             gd.currentTank.Landing();
@@ -156,45 +156,21 @@ namespace GameEngineStage7.Scenes
             // Клавиша Left - вращение дула против часовой стрелки
             if (e.KeyCode == Keys.Left)
             {
-                gd.currentTank.Angle += 5;
+                gd.currentTank.Angle.Value += 5;
             }
 
             // Клавиша Right - вращение дула по часовой стрелке
             if (e.KeyCode == Keys.Right)
             {
-                gd.currentTank.Angle -= 5;
+                gd.currentTank.Angle.Value -= 5;
             }
 
-            /*
-            // Временно: сдвиг камеры над игровым полем
-            if (e.KeyCode == Keys.W)
+            // Пробел или Enter - произвести выстрел текущим оружием с текущими углом и мощностью
+            if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
             {
-                Rectangle rect = tmo.ViewPort;
-                tmo.ViewPort = new Rectangle(rect.X, rect.Y - 5, rect.Width, rect.Height);
+                gd.currentTank.Fire();
             }
-            if (e.KeyCode == Keys.S)
-            {
-                Rectangle rect = tmo.ViewPort;
-                tmo.ViewPort = new Rectangle(rect.X, rect.Y + 5, rect.Width, rect.Height);
-            }
-            if (e.KeyCode == Keys.A)
-            {
-                Rectangle rect = tmo.ViewPort;
-                tmo.ViewPort = new Rectangle(rect.X - 5, rect.Y, rect.Width, rect.Height);
-            }
-            if (e.KeyCode == Keys.D)
-            {
-                Rectangle rect = tmo.ViewPort;
-                tmo.ViewPort = new Rectangle(rect.X + 5, rect.Y, rect.Width, rect.Height);
-            }
-            */
-            /*
-            if (e.KeyCode == Keys.D)
-            {
-                PointF p = gd.player.GetPosition();
-                gd.player.SetPosition(p.X + 5, p.Y);
-            }
-            */
+
         }
 
         public override void Render(Graphics g)

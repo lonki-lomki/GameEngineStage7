@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using GameEngineStage7.Core;
+using GameEngineStage7.Utils;
 
 namespace GameEngineStage7.Entities
 {
@@ -8,7 +9,7 @@ namespace GameEngineStage7.Entities
     {
         private int power;
 
-        private int angle;
+        private Angle angle;
 
         private string name;
 
@@ -48,6 +49,9 @@ namespace GameEngineStage7.Entities
             SetSize(16, 16);
         }
 
+        /// <summary>
+        /// Мощность выстрела
+        /// </summary>
         public int Power
         {
             get => power;
@@ -65,22 +69,10 @@ namespace GameEngineStage7.Entities
             }
         }
 
-        public int Angle
-        {
-            get => angle;
-            set
-            {
-                angle = value;
-                if (angle < 0)
-                {
-                    angle = 0;
-                }
-                if (angle > 180)
-                {
-                    angle = 180;
-                }
-            }
-        }
+        /// <summary>
+        /// Угол поворота ствола (0-90 градусов, с учетом поворота корпуса танка при переходе через 90 градусов)
+        /// </summary>
+        public Angle Angle { get => angle; set => angle = value; }
 
         public string Name { get => name; set => name = value; }
         public Color Color { get => color; set => color = value; }
@@ -120,10 +112,27 @@ namespace GameEngineStage7.Entities
             return true;
         }
 
+        /// <summary>
+        /// Произвести выстрел
+        /// </summary>
+        public void Fire()
+        {
+            // Создать снаряд с начальными параметрами
+            Bullet b = new Bullet("bullet", gd);
+            b.SetPosition(GetPosition().X + GetSize().Width / 2, GetPosition().Y);
+            b.SetLayer(2);
+            b.SetGravity(true);
+            // TODO: разложить скорость по составляющим
+            b.SetVelocity(Power * 2, 0 - Power * 2);
+            b.SetSize(3.0f, 3.0f);
+            gd.curScene.objects.Add(b);
+            gd.world.Add(b);
+        }
+
         public override void Render(Graphics g)
         {
             //base.Render(g);
-            //g.DrawImage(img, GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, GetSize().Width, GetSize().Height);
+            // TODO: отображение танка в зависимости от угла поворота дула: 0-90 - направление дула вправа, 91-180 - направление дула влево
             g.FillRectangle(new SolidBrush(color), GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, GetSize().Width, GetSize().Height / 2);
         }
 

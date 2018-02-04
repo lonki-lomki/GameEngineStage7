@@ -68,6 +68,7 @@
     <Compile Include="Core\PhysWorld.cs" />
     <Compile Include="Core\ResourceManager.cs" />
     <Compile Include="Core\Scene.cs" />
+    <Compile Include="Entities\Bullet.cs" />
     <Compile Include="Entities\Weapon.cs" />
     <Compile Include="Entities\Explosion.cs" />
     <Compile Include="Entities\GamePanel.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenes\GameScene.cs" />
+    <Compile Include="Utils\Angle.cs" />
     <Compile Include="Utils\Box.cs" />
     <Compile Include="Utils\Collider.cs" />
     <Compile Include="Utils\Gradient.cs" />
