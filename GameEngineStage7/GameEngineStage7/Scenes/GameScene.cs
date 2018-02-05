@@ -196,7 +196,7 @@ namespace GameEngineStage7.Scenes
         public override void MouseDown(object sender, MouseEventArgs e)
         {
             base.MouseDown(sender, e);
-
+            /*
             if (e.Button == MouseButtons.Left)
             {
                 Explosion expl = new Explosion("explosion", gd);
@@ -209,6 +209,7 @@ namespace GameEngineStage7.Scenes
             {
 
             }
+            */
         }
     }
 }

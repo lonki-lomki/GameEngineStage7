@@ -30,6 +30,27 @@ namespace GameEngineStage7.Entities
         public override void Update(int delta)
         {
             base.Update(delta);
+
+            // Проверка коллизии с ландшафтом
+            Bitmap bmp = new Bitmap(gd.landshaft.GetImage());
+
+            // TODO: ошибка при выходе за пределы координат картинки
+            Color c = bmp.GetPixel((int)GetPosition().X, (int)GetPosition().Y);
+            // Проверить коллизию с землей
+            if (c.A == 255)
+            {
+                // Коснулись земли
+                // Уничтожить снаряд и создать объект-взрыв
+                SetDestroyed(true);
+                Explosion expl = new Explosion("explosion", gd);
+                expl.SetPosition(GetPosition().X, GetPosition().Y);   // перевести из координат экрана в координаты камеры минус размер панели (этот размер будет добавлен при отрисовке)
+                expl.SetLayer(1);
+                gd.curScene.objects.Add(expl);
+                gd.world.Add2(expl);
+
+            }
+
+            bmp.Dispose();
         }
     }
 }
