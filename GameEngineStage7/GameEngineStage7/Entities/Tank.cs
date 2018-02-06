@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using GameEngineStage7.Core;
 using GameEngineStage7.Utils;
@@ -126,7 +127,8 @@ namespace GameEngineStage7.Entities
             // Скорость по X = V * cos(alpha)
             //             Y = V * sin(alpha)
             //b.SetVelocity(Power * 2, 0 - Power * 2);
-            b.SetVelocity(Power * (float)(Math.Cos(angle.Value*180/Math.PI)), Power * (float)(Math.Sin(angle.Value*180/Math.PI)));
+            //gd.log.Write("vx:"+(Power * (float)(Math.Cos(angle.Value * 180 / Math.PI)))+" vy:"+ (0 - Power * (float)(Math.Sin(angle.Value * 180 / Math.PI))));
+            b.SetVelocity(Power * (float)(Math.Cos(angle.Value * Math.PI / 180)), 0 - Power * (float)(Math.Sin(angle.Value * Math.PI / 180)));
             b.SetSize(3.0f, 3.0f);
             gd.curScene.objects.Add(b);
             gd.world.Add(b);
