@@ -123,7 +123,10 @@ namespace GameEngineStage7.Entities
             b.SetLayer(2);
             b.SetGravity(true);
             // TODO: разложить скорость по составляющим
-            b.SetVelocity(Power * 2, 0 - Power * 2);
+            // Скорость по X = V * cos(alpha)
+            //             Y = V * sin(alpha)
+            //b.SetVelocity(Power * 2, 0 - Power * 2);
+            b.SetVelocity(Power * (float)(Math.Cos(angle.Value*180/Math.PI)), Power * (float)(Math.Sin(angle.Value*180/Math.PI)));
             b.SetSize(3.0f, 3.0f);
             gd.curScene.objects.Add(b);
             gd.world.Add(b);
