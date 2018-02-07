@@ -10,7 +10,7 @@ namespace GameEngineStage7.Entities
     {
         private int power;
 
-        private Angle angle;
+        private Angle angle_;
 
         private string name;
 
@@ -73,7 +73,7 @@ namespace GameEngineStage7.Entities
         /// <summary>
         /// Угол поворота ствола (0-90 градусов, с учетом поворота корпуса танка при переходе через 90 градусов)
         /// </summary>
-        public Angle Angle { get => angle; set => angle = value; }
+        public Angle Angle { get => angle_; set => angle_ = value; }
 
         public string Name { get => name; set => name = value; }
         public Color Color { get => color; set => color = value; }
@@ -123,12 +123,9 @@ namespace GameEngineStage7.Entities
             b.SetPosition(GetPosition().X + GetSize().Width / 2, GetPosition().Y);
             b.SetLayer(2);
             b.SetGravity(true);
-            // TODO: разложить скорость по составляющим
             // Скорость по X = V * cos(alpha)
             //             Y = V * sin(alpha)
-            //b.SetVelocity(Power * 2, 0 - Power * 2);
-            //gd.log.Write("vx:"+(Power * (float)(Math.Cos(angle.Value * 180 / Math.PI)))+" vy:"+ (0 - Power * (float)(Math.Sin(angle.Value * 180 / Math.PI))));
-            b.SetVelocity(Power * (float)(Math.Cos(angle.Value * Math.PI / 180)), 0 - Power * (float)(Math.Sin(angle.Value * Math.PI / 180)));
+            b.SetVelocity(Power * (float)(Math.Cos(angle_.Value * Math.PI / 180)), 0 - Power * (float)(Math.Sin(angle_.Value * Math.PI / 180)));
             b.SetSize(3.0f, 3.0f);
             gd.curScene.objects.Add(b);
             gd.world.Add(b);
@@ -139,6 +136,10 @@ namespace GameEngineStage7.Entities
             //base.Render(g);
             // TODO: отображение танка в зависимости от угла поворота дула: 0-90 - направление дула вправа, 91-180 - направление дула влево
             g.FillRectangle(new SolidBrush(color), GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, GetSize().Width, GetSize().Height / 2);
+            // Отображение дула
+            double x = GetSize().Width / 2 * Math.Cos(angle_.Value * Math.PI / 180);
+            double y = GetSize().Width / 2 * Math.Sin(angle_.Value * Math.PI / 180);
+            g.DrawLine(new Pen(color, 2), GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2, GetPosition().Y + gd.camera.Geometry.Y, GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2 + (int)x, GetPosition().Y + gd.camera.Geometry.Y - (int)y);
         }
 
         public override void Update(int delta)

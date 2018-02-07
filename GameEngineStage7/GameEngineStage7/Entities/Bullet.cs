@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using GameEngineStage7.Core;
 
 namespace GameEngineStage7.Entities
@@ -29,13 +30,23 @@ namespace GameEngineStage7.Entities
 
         public override void Update(int delta)
         {
+            Color c;
+
             base.Update(delta);
 
             // Проверка коллизии с ландшафтом
             Bitmap bmp = new Bitmap(gd.landshaft.GetImage());
 
-            // TODO: ошибка при выходе за пределы координат картинки
-            Color c = bmp.GetPixel((int)GetPosition().X, (int)GetPosition().Y);
+            try
+            {
+                c = bmp.GetPixel((int)GetPosition().X, (int)GetPosition().Y);
+            }
+            catch (Exception e)
+            {
+                // TODO: это выход за пределы картинки, надо пометить особым кодом, например, прозрачностью 254
+                c = Color.FromArgb(255, 0, 0, 0);
+            }
+
             // Проверить коллизию с землей
             if (c.A == 255)
             {
