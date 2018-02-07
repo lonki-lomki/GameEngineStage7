@@ -69,6 +69,7 @@
     <Compile Include="Core\ResourceManager.cs" />
     <Compile Include="Core\Scene.cs" />
     <Compile Include="Entities\Bullet.cs" />
+    <Compile Include="Entities\Button.cs" />
     <Compile Include="Entities\Weapon.cs" />
     <Compile Include="Entities\Explosion.cs" />
     <Compile Include="Entities\GamePanel.cs" />

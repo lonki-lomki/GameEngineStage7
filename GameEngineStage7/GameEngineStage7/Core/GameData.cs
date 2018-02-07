@@ -20,6 +20,20 @@ namespace GameEngineStage7.Core
             GameOver
         }
 
+        // Набор значений для определения типа танка (игрока)
+        public enum TankTypes
+        {
+            Player      = 0,
+            Moron       = 1,
+            Shooter     = 2,
+            Poolshark   = 3,
+            Tosser      = 4,
+            Chooser     = 5,
+            Spoiler     = 6,
+            Cyborg      = 7,
+            Unknown     = 8
+        }
+
         private static GameData instance;
 
         public PhysWorld world;

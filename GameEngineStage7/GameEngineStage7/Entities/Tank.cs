@@ -35,6 +35,11 @@ namespace GameEngineStage7.Entities
 
         private List<Weapon> weapons;
 
+        /// <summary>
+        /// Тип танка (игрока)
+        /// </summary>
+        private GameData.TankTypes tankType;
+
 
         public Tank()
         {
@@ -84,6 +89,7 @@ namespace GameEngineStage7.Entities
         public int Shields { get => shields; set => shields = value; }
         public int MagDeflectors { get => magDeflectors; set => magDeflectors = value; }
         public int Money { get => money; set => money = value; }
+        public GameData.TankTypes TankType { get => tankType; set => tankType = value; }
 
         /// <summary>
         /// Приземлить танк (сдвинуть вертикально вниз до контакта с землей)
