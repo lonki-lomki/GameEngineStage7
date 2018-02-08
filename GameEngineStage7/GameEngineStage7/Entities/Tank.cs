@@ -40,6 +40,7 @@ namespace GameEngineStage7.Entities
         /// </summary>
         private GameData.TankTypes tankType;
 
+        private int[] tank_bits;
 
         public Tank()
         {
@@ -53,6 +54,12 @@ namespace GameEngineStage7.Entities
         {
             // TODO: ВРЕМЕННО!!!! Позже размеры будут браться из картинки
             SetSize(16, 16);
+            tank_bits = new int[] {
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x04, 0x00, 0x02,
+                0x00, 0x01, 0x00, 0x01, 0x80, 0x00, 0x50, 0x00, 0x30, 0x00, 0x60, 0x00,
+                0xfc, 0x7f, 0xfc, 0x7f, 0xa8, 0x2a, 0xf8, 0x3f };
+            // TODO: преобразовать битовый массив в изображение
+
         }
 
         /// <summary>
@@ -76,6 +83,23 @@ namespace GameEngineStage7.Entities
         }
 
         /// <summary>
+        /// Максимальная мощность выстрела, она же ХП (при уменьшении до 0 танк считается уничтоженным)
+        /// </summary>
+        public int MaxPower
+        { 
+            get => maxPower; 
+            set
+            {
+                maxPower = value;
+                if (power > maxPower)
+                {
+                    power = maxPower;
+                }
+            }
+        }
+
+
+        /// <summary>
         /// Угол поворота ствола (0-90 градусов, с учетом поворота корпуса танка при переходе через 90 градусов)
         /// </summary>
         public Angle Angle { get => angle_; set => angle_ = value; }
@@ -83,7 +107,6 @@ namespace GameEngineStage7.Entities
         public string Name { get => name; set => name = value; }
         public Color Color { get => color; set => color = value; }
         public string WeaponName { get => weaponName; set => weaponName = value; }
-        public int MaxPower { get => maxPower; set => maxPower = value; }
         public float Battery { get => battery; set => battery = value; }
         public int Parachutes { get => parachutes; set => parachutes = value; }
         public int Shields { get => shields; set => shields = value; }
@@ -135,6 +158,17 @@ namespace GameEngineStage7.Entities
             b.SetSize(3.0f, 3.0f);
             gd.curScene.objects.Add(b);
             gd.world.Add(b);
+        }
+
+        
+        
+        /// <summary>
+        /// Получить урон
+        /// </summary>
+        /// <param name="damage">количество пунктов урона</param>
+        public void OnDamage(int damage)
+        {
+            MaxPower -= damage;
         }
 
         public override void Render(Graphics g)

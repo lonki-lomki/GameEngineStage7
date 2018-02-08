@@ -34,11 +34,12 @@ namespace GameEngineStage7.Entities
                 // Пометить объект для уничтожения
                 SetDestroyed(true);
                 // Зарисовать место взрыва прозрачным цветом
-                g.FillEllipse(new SolidBrush(Color.FromArgb(0, 0, 0, 0)), GetPosition().X - 50 + gd.camera.Geometry.X, GetPosition().Y - 50 + gd.camera.Geometry.Y, 100, 100);
+                g.FillEllipse(new SolidBrush(Color.FromArgb(0, 0, 0, 0)), GetPosition().X - GetSize().Width / 2/* + gd.camera.Geometry.X*/, GetPosition().Y - GetSize().Height / 2/* + gd.camera.Geometry.Y*/, GetSize().Width, GetSize().Height);
             }
             else
             {
-                g.FillEllipse(Brushes.Red, GetPosition().X - 50 + gd.camera.Geometry.X, GetPosition().Y - 50 + gd.camera.Geometry.Y, 100, 100);
+                g.FillEllipse(Brushes.Red, GetPosition().X - GetSize().Width / 2/* + gd.camera.Geometry.X*/, GetPosition().Y - GetSize().Height / 2/* + gd.camera.Geometry.Y*/, GetSize().Width, GetSize().Height);
+                //g.FillRectangle(Brushes.White, GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, 2, 2);
             }
         }
 
