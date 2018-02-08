@@ -126,7 +126,7 @@ namespace GameEngineStage7.Scenes
 
             if (e.KeyCode == Keys.R)
             {
-                gd.landshaft.Reload();
+                gd.landshaft.LandFall(true);
             }
 
             // Клавиша PageUp - увеличение мощности выстрела

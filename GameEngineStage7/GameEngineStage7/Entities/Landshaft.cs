@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -40,7 +41,12 @@ namespace GameEngineStage7.Entities
         /// <summary>
         /// Массив для хранения байтов изображения
         /// </summary>
-        byte[] pixels;
+        private byte[] pixels;
+
+        /// <summary>
+        /// Список столбцов для обработки осыпания земли
+        /// </summary>
+        private List<int> columns;
 
 
         public Landshaft()
@@ -136,10 +142,32 @@ namespace GameEngineStage7.Entities
         }
 
         /// <summary>
-        /// Тестирование попиксельной перезагрузки карты
+        /// Имитация осыпания земли (цикл по всем столбцам, сдвиг на один пиксель)
+        /// Если передан параметр true - заполняется список всех столбцов.
+        /// Если передан параметр false - отбабатываются только оставшиеся в списке столбцы.
+        /// Если столбец полностью обработан - удалить его из списка
         /// </summary>
-        public void Reload()
+        /// <param name="first">Флаг первого шага - обработка всех столбцов развертки (true)</param>
+        /// <returns>true - если частицы земли еще не упали, false - все частицы обработаны</returns>
+        public bool LandFall(bool first)
         {
+            if (first == true)
+            {
+                // Занести в список все столбцы изображения
+                columns = new List<int>();
+                for (int i = 0; i < width; i++)
+                {
+                    columns.Add(i);
+                }
+            }
+
+            // Выход, если в списке столбцов пусто
+            if (columns.Count == 0)
+            {
+                // Список пуст, можно остановить перерисовку
+                return false;
+            }
+
             // Преобразование изображения в пиксельный массив
             Bitmap bmp = new Bitmap(GetImage());
             BitmapData bitmapData = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
@@ -156,13 +184,11 @@ namespace GameEngineStage7.Entities
             */
 
 
-            //RemoveColor(Color.FromArgb(255, 255, 1, 1));
-
             byte a1, r1, g1, b1;
             byte a2, r2, g2, b2;
 
-            // Цикл по всем столбцам исходного изображения
-            for (int i = 0; i < width; i++)
+            // Цикл по выбранным столбцам изображения
+            foreach(int i in columns)
             {
                 // Цикл по пикселям в столбце
                 for (int j = height - 1; j >= 0; j--)
@@ -208,14 +234,14 @@ namespace GameEngineStage7.Entities
                     }
                 }
             }
-            
-
 
             // Обратное преобразование пиксельного массива в изображение
             Marshal.Copy(pixels, 0, iptr, pixels.Length);
             bmp.UnlockBits(bitmapData);
 
             SetImage(bmp);
+
+            return true;
         }
 
         /// <summary>
