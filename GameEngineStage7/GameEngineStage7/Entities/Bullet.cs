@@ -124,6 +124,8 @@ namespace GameEngineStage7.Entities
                     expl.SetSize(50.0f, 50.0f);
                     gd.curScene.objects.Add(expl);
                     gd.world.Add2(expl);
+                    // Перевод игрового цикла в режим взрыва
+                    gd.gameFlow = GameData.GameFlow.Explosion;
                     // Выход из цикла
                     break;
                 }
@@ -134,6 +136,8 @@ namespace GameEngineStage7.Entities
                     {
                         // Уничтожить снаряд без взрыва
                         SetDestroyed(true);
+                        // Перевод игрового цикла в режим падения земли
+                        gd.gameFlow = GameData.GameFlow.Landfall;
                         // Выход из цикла
                         break;
                     }

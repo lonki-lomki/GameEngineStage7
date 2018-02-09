@@ -74,6 +74,14 @@ namespace GameEngineStage7.Scenes
             objects.Add(gd.currentTank);
 
 
+            // Запуск игрового процесса
+            // Первый этап - Прицеливание
+            gd.gameFlow = GameData.GameFlow.Aiming;
+            
+
+
+
+
 
             // Загрузить базовое изображение
             //gd.rm.AddElementAsImage(ts.Image, @"Resources\" + ts.Image);
@@ -124,6 +132,12 @@ namespace GameEngineStage7.Scenes
                 Application.Exit();
             }
 
+            // Остальные клавиши обрабатываем только во время прицеливания
+            if (gd.gameFlow != GameData.GameFlow.Aiming)
+            {
+                return;
+            }
+
             if (e.KeyCode == Keys.R)
             {
                 gd.landshaft.LandFall(true);
@@ -169,6 +183,8 @@ namespace GameEngineStage7.Scenes
             if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Space)
             {
                 gd.currentTank.Fire();
+                // Сменить этап игрового цикла на выстрел и полет снаряда
+                gd.gameFlow = GameData.GameFlow.Firing;
             }
 
         }

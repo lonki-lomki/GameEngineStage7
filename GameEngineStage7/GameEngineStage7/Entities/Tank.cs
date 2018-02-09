@@ -72,6 +72,7 @@ namespace GameEngineStage7.Entities
                 0xf8, 0xff, 0x1f, 0x98, 0x99, 0x19, 0x98, 0x99, 0x19, 0xf0, 0xff, 0x0f };
             // Преобразовать битовый массив в изображение
             Bitmap bmp = new Bitmap(24, 24, PixelFormat.Format32bppArgb);
+            // 24 точки = 3 байта на строку
             // Цикл по строкам битового массива
             for (int i = 0; i < GetSize().Width * 3; i += 3)
             {

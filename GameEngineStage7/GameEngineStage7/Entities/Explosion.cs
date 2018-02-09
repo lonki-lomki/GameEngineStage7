@@ -32,7 +32,10 @@ namespace GameEngineStage7.Entities
             if (timeToLive <= 0)
             {
                 // Пометить объект для уничтожения
-                SetDestroyed(true);
+                //SetDestroyed(true);
+                // Перевод игрового цикла в режим взрыва
+                //gd.gameFlow = GameData.GameFlow.Explosion;
+
                 // Зарисовать место взрыва прозрачным цветом
                 g.FillEllipse(new SolidBrush(Color.FromArgb(0, 0, 0, 0)), GetPosition().X - GetSize().Width / 2/* + gd.camera.Geometry.X*/, GetPosition().Y - GetSize().Height / 2/* + gd.camera.Geometry.Y*/, GetSize().Width, GetSize().Height);
             }
@@ -48,6 +51,19 @@ namespace GameEngineStage7.Entities
             base.Update(delta);
             // Уменьшить время жизни
             timeToLive -= delta;
+
+            // Настало время нанести урон танкам
+            if (gd.gameFlow == GameData.GameFlow.Damage)
+            {
+                // TODO: цикл по всем танкам и нанесение урона, если танк попал в зону поражения
+                // ....
+            }
+
+            // Проверить, что процесс визуализации взрыва завершен
+            if (timeToLive < 0 && gd.gameFlow == GameData.GameFlow.Explosion)
+            {
+                gd.gameFlow = GameData.GameFlow.Damage;
+            }
 
         }
     }

@@ -34,6 +34,19 @@ namespace GameEngineStage7.Core
             Unknown     = 8
         }
 
+        // Порядок этапов игрового цикла
+        public enum GameFlow : int
+        {
+            Aiming = 0,     // прицеливание
+            Firing = 1,     // выстрел (полет снаряда)
+            Explosion = 2,  // взрыв
+            Damage = 3,     // нанесение урона танкам
+            Landfall = 4,   // падение кусков земли
+            Tankfall = 5,   // падение танков с нанесением урона
+            TankCrash = 6   // уничтожение подбитых танков
+            // далее в цикле обработка пунктов 2, 3, 4, 5, 6 пока состояние не стабилизируется
+        }
+
         private static GameData instance;
 
         public PhysWorld world;
@@ -70,6 +83,8 @@ namespace GameEngineStage7.Core
         //
 
         public Tank currentTank;
+
+        public GameFlow gameFlow;
 
         // Запретить new
         private GameData()
