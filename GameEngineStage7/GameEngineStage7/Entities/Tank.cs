@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using GameEngineStage7.Core;
 using GameEngineStage7.Utils;
 
@@ -52,13 +53,47 @@ namespace GameEngineStage7.Entities
 
         public Tank(string id, GameData gd) : base(id, gd)
         {
+        }
+
+        public Tank(string id, GameData gd, GameData.TankTypes type, Color c) : base(id, gd)
+        {
+            tankType = type;
+            color = c;
+
             // TODO: ВРЕМЕННО!!!! Позже размеры будут браться из картинки
-            SetSize(16, 16);
+            SetSize(24, 24);
+            // Битовый массив из файла формата XBM
             tank_bits = new int[] {
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x04, 0x00, 0x02,
-                0x00, 0x01, 0x00, 0x01, 0x80, 0x00, 0x50, 0x00, 0x30, 0x00, 0x60, 0x00,
-                0xfc, 0x7f, 0xfc, 0x7f, 0xa8, 0x2a, 0xf8, 0x3f };
-            // TODO: преобразовать битовый массив в изображение
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x18, 0x00, 0x00, 0x18, 0x00, 0x00, 0x3c, 0x00, 0x00, 0x7e, 0x00,
+                0x00, 0xff, 0x00, 0x80, 0xff, 0x01, 0xc0, 0xff, 0x03, 0xf0, 0xff, 0x0f,
+                0xf8, 0xff, 0x1f, 0x98, 0x99, 0x19, 0x98, 0x99, 0x19, 0xf0, 0xff, 0x0f };
+            // Преобразовать битовый массив в изображение
+            Bitmap bmp = new Bitmap(24, 24, PixelFormat.Format32bppArgb);
+            // Цикл по строкам битового массива
+            for (int i = 0; i < GetSize().Width * 3; i += 3)
+            {
+                // Цикл по двум байтам
+                for (int j = 0; j < 3; j++)
+                {
+                    byte b = (byte)tank_bits[i + 2 - j];
+                    // Цикл по битам в байте
+                    for (int k = 0; k < 8; k++)
+                    {
+                        if (b % 2 == 1)
+                        {
+                            // Есть пиксель
+                            bmp.SetPixel(j * 8 + 8 - k, i / 3, color);
+                        }
+                        // к следующему биту
+                        b /= 2;
+                    }
+                }
+            }
+
+            SetImage(bmp);
 
         }
 
@@ -128,7 +163,7 @@ namespace GameEngineStage7.Entities
             for (int i = (int)GetPosition().Y; i < gd.camera.Geometry.Height; i++)
             {
                 //Color c = gd.landshaft.GetPixel((int)GetPosition().X, i);
-                Color c = bmp.GetPixel((int)GetPosition().X + (int)GetSize().Width / 2, i + (int)GetSize().Height / 2);
+                Color c = bmp.GetPixel((int)GetPosition().X + (int)GetSize().Width / 2, i + (int)GetSize().Height);
                 if (c.A == 255)
                 {
                     // Коснулись земли - остановить цикл
@@ -149,7 +184,7 @@ namespace GameEngineStage7.Entities
         {
             // Создать снаряд с начальными параметрами
             Bullet b = new Bullet("bullet", gd);
-            b.SetPosition(GetPosition().X + GetSize().Width / 2, GetPosition().Y);
+            b.SetPosition(GetPosition().X + GetSize().Width / 2, GetPosition().Y + GetSize().Width / 2);
             b.SetLayer(2);
             b.SetGravity(true);
             // Скорость по X = V * cos(alpha)
@@ -173,13 +208,19 @@ namespace GameEngineStage7.Entities
 
         public override void Render(Graphics g)
         {
-            //base.Render(g);
+            base.Render(g);
+            double x = GetSize().Width / 2 * Math.Cos(angle_.Value * Math.PI / 180);
+            double y = GetSize().Width / 2 * Math.Sin(angle_.Value * Math.PI / 180);
+            g.DrawLine(new Pen(color, 2), GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2, GetPosition().Y + gd.camera.Geometry.Y + GetSize().Height / 2, GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2 + (int)x, GetPosition().Y + gd.camera.Geometry.Y - (int)y + GetSize().Height / 2);
+
+            /*
             // TODO: отображение танка в зависимости от угла поворота дула: 0-90 - направление дула вправа, 91-180 - направление дула влево
             g.FillRectangle(new SolidBrush(color), GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, GetSize().Width, GetSize().Height / 2);
             // Отображение дула
             double x = GetSize().Width / 2 * Math.Cos(angle_.Value * Math.PI / 180);
             double y = GetSize().Width / 2 * Math.Sin(angle_.Value * Math.PI / 180);
             g.DrawLine(new Pen(color, 2), GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2, GetPosition().Y + gd.camera.Geometry.Y, GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2 + (int)x, GetPosition().Y + gd.camera.Geometry.Y - (int)y);
+            */
         }
 
         public override void Update(int delta)
