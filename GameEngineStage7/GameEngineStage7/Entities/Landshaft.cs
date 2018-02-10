@@ -48,6 +48,11 @@ namespace GameEngineStage7.Entities
         /// </summary>
         private List<int> columns;
 
+        /// <summary>
+        /// Флаг для запуска процесса осыпания земли
+        /// </summary>
+        private bool flag = true;
+
 
         public Landshaft()
         {
@@ -138,7 +143,21 @@ namespace GameEngineStage7.Entities
         {
             base.Update(delta);
 
-            //Reload();
+            // Проверить, что игра перешла в состояние осыпания земли
+            if (gd.gameFlow == GameData.GameFlow.Landfall)
+            {
+                // Сделать один цикл осыпания земли и проверить, осыпается ли еще что-нибудь
+                if (LandFall(flag) == false)
+                {
+                    // Ничего не осыпается, можно переходить к следующему этапу
+                    gd.gameFlow = GameData.GameFlow.Tankfall;
+                    flag = true;
+                } else
+                {
+                    // Дальнейшее осыпание будет по оставшимся столбцам
+                    flag = false;
+                }
+            }
         }
 
         /// <summary>
@@ -151,6 +170,8 @@ namespace GameEngineStage7.Entities
         /// <returns>true - если частицы земли еще не упали, false - все частицы обработаны</returns>
         public bool LandFall(bool first)
         {
+            List<int> columnsForRemove = new List<int>();
+
             if (first == true)
             {
                 // Занести в список все столбцы изображения
@@ -187,52 +208,79 @@ namespace GameEngineStage7.Entities
             byte a1, r1, g1, b1;
             byte a2, r2, g2, b2;
 
+            // Флаг, фиксирующий изменения, произошедшие в данном столбце
+            bool flagChangeColumn = false;
+
             // Цикл по выбранным столбцам изображения
             foreach(int i in columns)
             {
+                flagChangeColumn = false;
                 // Цикл по пикселям в столбце
                 for (int j = height - 1; j >= 0; j--)
                 {
                     //Color c1 = GetPixel(i, j);  // Верхий пиксель
                     //Color c2 = GetPixel(i, j + 1);  // Нижний пиксель
                     ////GetPixel(i, j, out r1, out g1, out b1, out a1);  // Верхий пиксель
+                    
                     int index = (j * width + i) * step;
                     a1 = pixels[index + 3];
-                    //r1 = pixels[index + 2];
-                    //g1 = pixels[index + 1];
-                    //b1 = pixels[index];
+                    r1 = pixels[index + 2];
+                    g1 = pixels[index + 1];
+                    b1 = pixels[index];
+                    
                     ////GetPixel(i, j + 1, out r2, out g2, out b2, out a2);  // Нижний пиксель
+                    
                     int index2 = ((j + 1) * width + i) * step;
                     if (index2 >= 0 && (index2+step) < pixels.Length)
                     {
                         a2 = pixels[index2 + 3];
-                        //r2 = pixels[index2 + 2];
-                        //g2 = pixels[index2 + 1];
-                        //b2 = pixels[index2];
+                        r2 = pixels[index2 + 2];
+                        g2 = pixels[index2 + 1];
+                        b2 = pixels[index2];
                     } else
                     {
                         a2 = 255;
-                        //r2 = 255;
-                        //g2 = 255;
-                        //b2 = 255;
+                        r2 = 255;
+                        g2 = 255;
+                        b2 = 255;
                     }
+                    
                     // Проверить, что ниже верхнего пикселя - пусто
                     //if (c1.A == 255 && c2.A != 255)
                     if (a1 == 255 && a2 != 255)
                     {
+                        // Зафиксировать в флаге, что данный столбец изменился
+                        flagChangeColumn = true;
                         // Переместить пиксель на строку вниз, вместо себя оставить пустой пиксель
                         //SetPixel(i, j, 0, 0, 0, 0);
+                        
                         pixels[index + 3] = 0;
-                        //pixels[index + 2] = 0;
-                        //pixels[index + 1] = 0;
-                        //pixels[index] = 0;
+                        pixels[index + 2] = 0;
+                        pixels[index + 1] = 0;
+                        pixels[index] = 0;
+                        
                         //SetPixel(i, j + 1, r1, g1, b1, a1);
+                        //SetPixel(i, j + 1, c1.R, c1.G, c1.B, c1.A);
+                        
                         pixels[index2 + 3] = a1;
-                        //pixels[index2 + 2] = r1;
-                        //pixels[index2 + 1] = g1;
-                        //pixels[index2] = b1;
+                        pixels[index2 + 2] = r1;
+                        pixels[index2 + 1] = g1;
+                        pixels[index2] = b1;
+                        
                     }
                 }
+                // Проверить, изменилсяя ли данный столбец
+                if (flagChangeColumn == false)
+                {
+                    // Столбец не изменился, удаляем из списка
+                    columnsForRemove.Add(i);
+                }
+            }   // foreach
+
+            // Удалить из основного списка столбцов те столбцы, которые уже не изменяются
+            foreach(int i in columnsForRemove)
+            {
+                columns.Remove(i);
             }
 
             // Обратное преобразование пиксельного массива в изображение

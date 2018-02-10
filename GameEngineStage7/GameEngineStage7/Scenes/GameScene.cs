@@ -11,6 +11,8 @@ namespace GameEngineStage7.Scenes
     /// </summary>
     public class GameScene : Scene
     {
+        // Переменная для отслеживания состояния падения танков
+        //private bool isFallingTanks = false;
 
         public GameScene(GameData.GameState ID, GameData gd) : base(ID, gd)
         {
@@ -205,8 +207,35 @@ namespace GameEngineStage7.Scenes
 
         public override void Update(int delta)
         {
+            bool flag;
+
             base.Update(delta);
+            // Ландшафт - это отдельный объект и обрабатывается отдельно
             gd.landshaft.Update(delta);
+
+            // Падение файлов после взрывов и осыпание земли обрабатывает здесь
+            if (gd.gameFlow == GameData.GameFlow.Tankfall)
+            {
+                flag = false;
+                // Падение танков должно быть с анимацией, поэтому растягиваем падение на несколько кадров
+                foreach (Entity e in gd.curScene.objects)
+                {
+                    //gd.log.Write(e.GetType().Name);
+                    if (e.GetType().Name == "Tank")
+                    {
+                        if (((Tank)e).Landing2() == true)
+                        {
+                            // Танк продолжает падение
+                            flag = true;
+                        }
+                    }
+                }
+                if (flag == false)
+                {
+                    // Все танки упали, переходим в следующий статус
+                    gd.gameFlow = GameData.GameFlow.Aiming;
+                }
+            }
         }
 
         public override void MouseDown(object sender, MouseEventArgs e)

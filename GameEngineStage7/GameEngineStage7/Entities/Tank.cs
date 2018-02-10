@@ -153,8 +153,7 @@ namespace GameEngineStage7.Entities
         /// <summary>
         /// Приземлить танк (сдвинуть вертикально вниз до контакта с землей)
         /// </summary>
-        /// <returns>true, если танк коснулся земли</returns>
-        public bool Landing()
+        public void Landing()
         {
             // Двигать вниз попиксельно танк до контакта с ландшафтом
             // Факт контакта определять с помощью метода gd.landshaft.GetPixel();
@@ -172,6 +171,46 @@ namespace GameEngineStage7.Entities
                 }
                 SetPosition(GetPosition().X, i);
             }
+
+            bmp.Dispose();
+        }
+
+        /// <summary>
+        /// Приземлить танк (версия 2: пошаговое спускание до касания с ландшафтом)
+        /// </summary>
+        /// <returns>true - танк продолжает движение вниз, false - танк опустился на минимально возможную высоту</returns>
+        public bool Landing2()
+        {
+
+            gd.log.Write("in Landing2");
+            gd.log.Flush();
+
+            Bitmap bmp = new Bitmap(gd.landshaft.GetImage());
+
+            // Проверить на нижнюю границу изображения
+            if (GetPosition().Y >= gd.camera.Geometry.Height)
+            {
+                // Далее опускаться некуда
+                gd.log.Write("1 if");
+                gd.log.Flush();
+                return false;
+            }
+
+            // Проверить пиксель под танком
+            Color c = bmp.GetPixel((int)GetPosition().X + (int)GetSize().Width / 2, (int)GetPosition().X + (int)GetSize().Height);
+            if (c.A == 255)
+            {
+
+                // TODO: !!!!!! ПРОВЕРИТЬ, почему заходит сюда!!!
+
+                // Это пиксель ландшафта - остановить движение
+                gd.log.Write("2 if");
+                gd.log.Flush();
+                return false;
+            }
+
+            // Двигаемся на 1 пиксель вниз
+            SetPosition(GetPosition().X, GetPosition().Y + 1);
 
             bmp.Dispose();
 
