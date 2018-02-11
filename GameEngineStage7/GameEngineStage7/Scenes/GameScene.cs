@@ -1,6 +1,7 @@
 ﻿using GameEngineStage7.Core;
 using GameEngineStage7.Entities;
 using GameEngineStage7.Utils;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -61,29 +62,41 @@ namespace GameEngineStage7.Scenes
             // Добавить объект на сцену
             //objects.Add(gd.landshaft);
 
-            // Создать танк
-            gd.currentTank = new Tank("tank", gd, GameData.TankTypes.Player, Color.ForestGreen);
-            gd.currentTank.SetPosition(500, 32);
-            gd.currentTank.SetLayer(2);
-            gd.currentTank.MaxPower = 1000;
-            gd.currentTank.Power = 200;
-            gd.currentTank.Angle = new Angle(60);
-            gd.currentTank.Name = "Username";
-            //gd.currentTank.Color = Color.ForestGreen;
-            gd.currentTank.Landing();
-            //gd.tank.SetGravity(true);
-            // Добавить объект на сцену
-            objects.Add(gd.currentTank);
+            // Танки
+            gd.tanks = new List<Tank>();
 
+            // Создать танк игрока
+            Tank tank = new Tank("Player", gd, GameData.TankTypes.Player, Color.ForestGreen);
+            tank.SetPosition(300, 32);
+            tank.SetLayer(2);
+            tank.MaxPower = 1000;
+            tank.Power = 200;
+            tank.Angle = new Angle(60);
+            tank.Name = "Player";
+            tank.Landing();
+            gd.tanks.Add(tank);
+            // Добавить объект на сцену
+            objects.Add(tank);
+
+            gd.currentTank = tank;
+
+            // Создать танк бота
+            tank = new Tank("Bot", gd, GameData.TankTypes.Tosser, Color.Red);
+            tank.SetPosition(900, 32);
+            tank.SetLayer(2);
+            tank.MaxPower = 1000;
+            tank.Power = 200;
+            tank.Angle = new Angle(60);
+            tank.Name = "Bot";
+            tank.Landing();
+            gd.tanks.Add(tank);
+            // Добавить объект на сцену
+            objects.Add(tank);
 
             // Запуск игрового процесса
             // Первый этап - Прицеливание
             gd.gameFlow = GameData.GameFlow.Aiming;
             
-
-
-
-
 
             // Загрузить базовое изображение
             //gd.rm.AddElementAsImage(ts.Image, @"Resources\" + ts.Image);
@@ -142,7 +155,8 @@ namespace GameEngineStage7.Scenes
 
             if (e.KeyCode == Keys.R)
             {
-                gd.landshaft.LandFall(true);
+                //gd.landshaft.LandFall(true);
+                gd.currentTank.Landing2();
             }
 
             // Клавиша PageUp - увеличение мощности выстрела
@@ -209,9 +223,68 @@ namespace GameEngineStage7.Scenes
         {
             bool flag;
 
+            // GameOver
+            if (gd.gameFlow == GameData.GameFlow.GameOver)
+            {
+                // Создать сцену GameOver
+                GameOverScene gameover = new GameOverScene(GameData.GameState.GameOver, gd);
+                gd.curScene = gameover;
+
+                gd.curScene.Init();
+
+                gd.sceneChange = true;
+                return;
+            }
+
+
             base.Update(delta);
             // Ландшафт - это отдельный объект и обрабатывается отдельно
             gd.landshaft.Update(delta);
+
+            // Выстрел бота
+            if (gd.currentTank.TankType != GameData.TankTypes.Player && gd.gameFlow == GameData.GameFlow.Aiming)
+            {
+                gd.currentTank.BotFire();
+                // Сменить этап игрового цикла на выстрел и полет снаряда
+                gd.gameFlow = GameData.GameFlow.Firing;
+            }
+
+            // Все танки упали, фиксируем урон от падения
+            if (gd.gameFlow == GameData.GameFlow.TankCrash)
+            {
+                flag = false;
+                foreach (Entity e in gd.curScene.objects.ToArray())
+                {
+                    if (e.GetType().Name == "Tank")
+                    {
+                        if (((Tank)e).FixDamage() == true)
+                        {
+                            // Танк уничтожен
+                            flag = true;
+                        }
+                    }
+                }
+                // Перевод в следующий статус
+                if (flag == true)
+                {
+                    // Танк взорвался
+                    gd.gameFlow = GameData.GameFlow.Explosion;
+                }
+                else
+                {
+                    // Больше никто не взорвался, следующий выстрел
+                    // Передать ход следующему танку
+                    // TODO: КОСТЫЛЬ!!!! Надо переделать!!!
+                    int idx = gd.tanks.IndexOf(gd.currentTank);
+                    idx++;
+                    if (idx >= gd.tanks.Count)
+                    {
+                        idx = 0;
+                    }
+                    gd.currentTank = gd.tanks[idx];
+                    gd.gameFlow = GameData.GameFlow.Aiming;
+                }
+            }
 
             // Падение файлов после взрывов и осыпание земли обрабатывает здесь
             if (gd.gameFlow == GameData.GameFlow.Tankfall)
@@ -233,7 +306,32 @@ namespace GameEngineStage7.Scenes
                 if (flag == false)
                 {
                     // Все танки упали, переходим в следующий статус
-                    gd.gameFlow = GameData.GameFlow.Aiming;
+                    gd.gameFlow = GameData.GameFlow.TankCrash;
+                }
+            }
+
+            // Посчитать количество живых танков.
+            // TODO: КОСТЫЛЬ только для двух танков
+            if (gd.gameFlow != GameData.GameFlow.TankExplosion)
+            {
+                flag = false;
+                Tank tank = new Tank();
+                foreach (Tank t in gd.tanks)
+                {
+                    if (t.IsDestroyed() == true)
+                    {
+                        flag = true;
+                    }
+                    else
+                    {
+                        tank = t;
+                    }
+                }
+                if (flag == true)
+                {
+                    // Game Over. Победил танк tank
+                    gd.currentTank = tank;
+                    gd.gameFlow = GameData.GameFlow.TankExplosion;
                 }
             }
         }

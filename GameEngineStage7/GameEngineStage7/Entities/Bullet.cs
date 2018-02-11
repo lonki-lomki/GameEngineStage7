@@ -109,7 +109,7 @@ namespace GameEngineStage7.Entities
                 }
                 catch (Exception e)
                 {
-                    // TODO: это выход за пределы картинки, надо пометить особым кодом, например, прозрачностью 254
+                    // это выход за пределы картинки, надо пометить особым кодом, например, прозрачностью 254
                     c = Color.FromArgb(254, 0, 0, 0);
                 }
                 // Проверить коллизию с землей
@@ -134,12 +134,31 @@ namespace GameEngineStage7.Entities
                 {
                     if (y > gd.camera.Geometry.Height + gd.camera.Geometry.Y)
                     {
-                        // Уничтожить снаряд без взрыва
-                        SetDestroyed(true);
-                        // Перевод игрового цикла в режим падения земли
-                        gd.gameFlow = GameData.GameFlow.Landfall;
-                        // Выход из цикла
-                        break;
+                        // Проверить попадание в экран по горизонтали
+                        if (x < gd.camera.Geometry.X || x > gd.camera.Geometry.Width + gd.camera.Geometry.X)
+                        {
+                            // Уничтожить снаряд без взрыва
+                            SetDestroyed(true);
+                            // Перевод игрового цикла в режим падения земли
+                            gd.gameFlow = GameData.GameFlow.Landfall;
+                            // Выход из цикла
+                            break;
+                        } else
+                        {
+                            // Долетели до нижней строки экрана в границах камеры
+                            // Уничтожить снаряд и создать объект-взрыв
+                            SetDestroyed(true);
+                            Explosion expl = new Explosion("explosion", gd);
+                            expl.SetPosition(x, y - CONFIG.PANEL_HEIGHT);   // перевести из координат экрана в координаты камеры минус размер панели (этот размер будет добавлен при отрисовке)
+                            expl.SetLayer(1);
+                            expl.SetSize(50.0f, 50.0f);
+                            gd.curScene.objects.Add(expl);
+                            gd.world.Add2(expl);
+                            // Перевод игрового цикла в режим взрыва
+                            gd.gameFlow = GameData.GameFlow.Explosion;
+                            // Выход из цикла
+                            break;
+                        }
                     }
                 }
             } // цикл по точкам отрезка

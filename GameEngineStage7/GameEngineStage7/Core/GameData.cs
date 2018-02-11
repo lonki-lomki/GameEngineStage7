@@ -43,8 +43,10 @@ namespace GameEngineStage7.Core
             Damage = 3,     // нанесение урона танкам
             Landfall = 4,   // падение кусков земли
             Tankfall = 5,   // падение танков с нанесением урона
-            TankCrash = 6   // уничтожение подбитых танков
+            TankCrash = 6,  // уничтожение подбитых танков
             // далее в цикле обработка пунктов 2, 3, 4, 5, 6 пока состояние не стабилизируется
+            TankExplosion = 7,  // взрыв танка
+            GameOver = 8    // окончание игры
         }
 
         private static GameData instance;
@@ -81,6 +83,8 @@ namespace GameEngineStage7.Core
         public GraphicsPath gp;
         public Bitmap bmp;
         //
+
+        public List<Tank> tanks;
 
         public Tank currentTank;
 

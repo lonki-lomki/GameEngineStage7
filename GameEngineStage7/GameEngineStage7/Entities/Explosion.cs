@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using GameEngineStage7.Core;
+using GameEngineStage7.Utils;
 
 namespace GameEngineStage7.Entities
 {
@@ -60,7 +61,18 @@ namespace GameEngineStage7.Entities
                     if (e.GetType().Name == "Tank")
                     {
                         // TODO: определить дистанцию от танка до эпицентра взрыва
-                        ((Tank)e).OnDamage(0);
+                        // (использовать векторы)
+                        Vector from = Vector.FromPoint((int)GetPosition().X, (int)GetPosition().Y);
+                        Vector to = Vector.FromPoint((int)e.GetPosition().X + (int)e.GetSize().Width / 2, (int)e.GetPosition().Y + (int)e.GetSize().Height / 2);
+                        float distance = from.DistanceTo(to);
+
+                        float damage = 0.0f;
+                        // Урон зависит от радиуса взрыва и расстояния от эпицентра до танка
+                        if (distance < (GetSize().Width / 2 + e.GetSize().Width / 2))
+                        {
+                            damage = CONFIG.MISSILE_DAMAGE / (distance / 10);
+                        }
+                        ((Tank)e).OnDamage((int)damage);
                     }
                 }
                 // Пометить объект для уничтожения
@@ -73,6 +85,10 @@ namespace GameEngineStage7.Entities
             if (timeToLive < 0 && gd.gameFlow == GameData.GameFlow.Explosion)
             {
                 gd.gameFlow = GameData.GameFlow.Damage;
+            }
+            if (timeToLive < 0 && gd.gameFlow == GameData.GameFlow.TankExplosion)
+            {
+                gd.gameFlow = GameData.GameFlow.GameOver;
             }
         }
     }

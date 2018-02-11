@@ -43,6 +43,11 @@ namespace GameEngineStage7.Entities
 
         private int[] tank_bits;
 
+        /// <summary>
+        /// Накопление повреждений от падения танка
+        /// </summary>
+        private int fallDamage;
+
         public Tank()
         {
         }
@@ -127,6 +132,10 @@ namespace GameEngineStage7.Entities
             set
             {
                 maxPower = value;
+                if (maxPower < 0)
+                {
+                    maxPower = 0;
+                }
                 if (power > maxPower)
                 {
                     power = maxPower;
@@ -164,12 +173,12 @@ namespace GameEngineStage7.Entities
             {
                 //Color c = gd.landshaft.GetPixel((int)GetPosition().X, i);
                 Color c = bmp.GetPixel((int)GetPosition().X + (int)GetSize().Width / 2, i + (int)GetSize().Height);
+                SetPosition(GetPosition().X, i);
                 if (c.A == 255)
                 {
                     // Коснулись земли - остановить цикл
                     break;
                 }
-                SetPosition(GetPosition().X, i);
             }
 
             bmp.Dispose();
@@ -181,36 +190,27 @@ namespace GameEngineStage7.Entities
         /// <returns>true - танк продолжает движение вниз, false - танк опустился на минимально возможную высоту</returns>
         public bool Landing2()
         {
-
-            gd.log.Write("in Landing2");
-            gd.log.Flush();
-
             Bitmap bmp = new Bitmap(gd.landshaft.GetImage());
 
             // Проверить на нижнюю границу изображения
-            if (GetPosition().Y >= gd.camera.Geometry.Height)
+            if ((GetPosition().Y + (int)GetSize().Height) >= gd.camera.Geometry.Height)
             {
                 // Далее опускаться некуда
-                gd.log.Write("1 if");
-                gd.log.Flush();
                 return false;
             }
 
             // Проверить пиксель под танком
-            Color c = bmp.GetPixel((int)GetPosition().X + (int)GetSize().Width / 2, (int)GetPosition().X + (int)GetSize().Height);
+            Color c = bmp.GetPixel((int)GetPosition().X + (int)GetSize().Width / 2, (int)GetPosition().Y + (int)GetSize().Height);
             if (c.A == 255)
             {
-
-                // TODO: !!!!!! ПРОВЕРИТЬ, почему заходит сюда!!!
-
-                // Это пиксель ландшафта - остановить движение
-                gd.log.Write("2 if");
-                gd.log.Flush();
+                // Стоим на земле
                 return false;
             }
 
             // Двигаемся на 1 пиксель вниз
             SetPosition(GetPosition().X, GetPosition().Y + 1);
+            // Добавить накопительное повреждение
+            fallDamage += CONFIG.FALL_DAMAGE;
 
             bmp.Dispose();
 
@@ -235,7 +235,33 @@ namespace GameEngineStage7.Entities
             gd.world.Add(b);
         }
 
-        
+        /// <summary>
+        /// Попытка реализации ИИ для вражеского танка
+        /// TODO: надо сделать визуализацию прицеливания
+        /// </summary>
+        public void BotFire()
+        {
+            /*
+            Tank playerTank = new Tank();
+            // Поиск танка игрока
+            foreach(Tank t in gd.tanks)
+            {
+                if (t.TankType == GameData.TankTypes.Player)
+                {
+                    playerTank = t;
+                }
+            }
+            */
+
+            // Выставляем угол 90+45 = 135 градусов
+            Angle = new Angle(135);
+
+            // Выставляем рандомную мощность от 300 до 1000
+            Random r = new Random();
+            Power = 300 + r.Next(700);
+
+            Fire();
+        }
         
         /// <summary>
         /// Получить урон
@@ -246,26 +272,63 @@ namespace GameEngineStage7.Entities
             MaxPower -= damage;
         }
 
+        /// <summary>
+        /// Зафиксировать текущий ХП танка с учетом урона от падения
+        /// </summary>
+        /// <returns>true - в результате раунда танк уничтожен, false - танк еще живой</returns>
+        public bool FixDamage()
+        {
+            if (IsDestroyed() == true)
+            {
+                return false;
+            }
+
+            MaxPower -= fallDamage;
+            fallDamage = 0;
+            if (MaxPower <= 0)
+            {
+                // Танк уничтожен
+                SetDestroyed(true);
+                // Сгенерировать взрыв
+                Explosion expl = new Explosion("explosion", gd);
+                expl.SetPosition(GetPosition().X + GetSize().Width / 2, GetPosition().Y + GetSize().Height / 2);
+                expl.SetLayer(1);
+                expl.SetSize(100.0f, 100.0f);
+                gd.curScene.objects.Add(expl);
+                gd.world.Add2(expl);
+
+                return true;
+            }
+            // Танк еще не уничтожен
+            return false;
+        }
+
         public override void Render(Graphics g)
         {
-            base.Render(g);
-            double x = GetSize().Width / 2 * Math.Cos(angle_.Value * Math.PI / 180);
-            double y = GetSize().Width / 2 * Math.Sin(angle_.Value * Math.PI / 180);
-            g.DrawLine(new Pen(color, 2), GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2, GetPosition().Y + gd.camera.Geometry.Y + GetSize().Height / 2, GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2 + (int)x, GetPosition().Y + gd.camera.Geometry.Y - (int)y + GetSize().Height / 2);
+            if (IsDestroyed() == false)
+            {
+                base.Render(g);
+                double x = GetSize().Width / 2 * Math.Cos(angle_.Value * Math.PI / 180);
+                double y = GetSize().Width / 2 * Math.Sin(angle_.Value * Math.PI / 180);
+                g.DrawLine(new Pen(color, 2), GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2, GetPosition().Y + gd.camera.Geometry.Y + GetSize().Height / 2, GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2 + (int)x, GetPosition().Y + gd.camera.Geometry.Y - (int)y + GetSize().Height / 2);
 
-            /*
-            // TODO: отображение танка в зависимости от угла поворота дула: 0-90 - направление дула вправа, 91-180 - направление дула влево
-            g.FillRectangle(new SolidBrush(color), GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, GetSize().Width, GetSize().Height / 2);
-            // Отображение дула
-            double x = GetSize().Width / 2 * Math.Cos(angle_.Value * Math.PI / 180);
-            double y = GetSize().Width / 2 * Math.Sin(angle_.Value * Math.PI / 180);
-            g.DrawLine(new Pen(color, 2), GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2, GetPosition().Y + gd.camera.Geometry.Y, GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2 + (int)x, GetPosition().Y + gd.camera.Geometry.Y - (int)y);
-            */
+                /*
+                // TODO: отображение танка в зависимости от угла поворота дула: 0-90 - направление дула вправа, 91-180 - направление дула влево
+                g.FillRectangle(new SolidBrush(color), GetPosition().X + gd.camera.Geometry.X, GetPosition().Y + gd.camera.Geometry.Y, GetSize().Width, GetSize().Height / 2);
+                // Отображение дула
+                double x = GetSize().Width / 2 * Math.Cos(angle_.Value * Math.PI / 180);
+                double y = GetSize().Width / 2 * Math.Sin(angle_.Value * Math.PI / 180);
+                g.DrawLine(new Pen(color, 2), GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2, GetPosition().Y + gd.camera.Geometry.Y, GetPosition().X + gd.camera.Geometry.X + GetSize().Width / 2 + (int)x, GetPosition().Y + gd.camera.Geometry.Y - (int)y);
+                */
+            }
         }
 
         public override void Update(int delta)
         {
-            base.Update(delta);
+            if (IsDestroyed() == false)
+            {
+                base.Update(delta);
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ namespace GameEngineStage7.Entities
         private string strAngle = "Angle:";
         private int strAngleLen = 0;
 
-        private string placeHolder = "0000";
+        private string placeHolder = "00000";
         private int placeHolderLen = 0;
 
         private Font fnt;
